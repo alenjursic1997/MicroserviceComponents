@@ -1,0 +1,19 @@
+﻿{
+	"kumuluzee": {
+		"name": "test-service",
+		"server": {
+			"base-url": "http://localhost:9000",
+			"http": {
+				"port": 9000
+			}
+		},
+		"env": {
+			"name": "dev"
+		},
+		"config": {
+			"consul": {
+				"hosts": "http://localhost:8500"
+			}
+		}
+	}
+}

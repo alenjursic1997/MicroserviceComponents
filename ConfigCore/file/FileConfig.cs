@@ -56,8 +56,8 @@ namespace ConfigCore.file
 					json = File.ReadAllText(_filePath);
 				}
 
-				JObject obj = JObject.Parse(json);
-				return (string)obj.SelectToken(key);
+				JObject obj = JObject.Parse(json.ToLower());
+				return (string)obj.SelectToken(key.ToLower());
 			}
 			catch
 			{

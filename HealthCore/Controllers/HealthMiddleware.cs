@@ -44,7 +44,7 @@ namespace HealthCore.Controllers
 				context.Response.StatusCode = StatusCodes.Status200OK;
 			}
 
-			if (paths[paths.Length - 1] == "UI")
+			if (paths[paths.Length - 1] == "UI" && false) //currently not in use
 			{
 				context.Response.ContentType = "text/html";
 				string wrapper = @"<html><head></head><body><h1>HELLO</h1><div></div></body></html>";
