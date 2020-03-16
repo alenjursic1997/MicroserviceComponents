@@ -8,5 +8,11 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ConfigCore\ConfigCore.csproj" />
+    <ProjectReference Include="..\DiscoveryCore\DiscoveryCore.csproj" />
+    <ProjectReference Include="..\HealthCore\HealthCore.csproj" />
+  </ItemGroup>
+
 
 </Project>
