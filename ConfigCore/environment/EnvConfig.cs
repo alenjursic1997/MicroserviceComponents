@@ -37,7 +37,7 @@ namespace ConfigCore.environment
 				{
 					Regex rgx = new Regex($"[^a-zA-Z0-9 -]");
 					tempKey = rgx.Replace(tempKey, "_");
-					value = Environment.GetEnvironmentVariable(key, t);
+					value = Environment.GetEnvironmentVariable(tempKey, t);
 				}
 				if (value == null)
 				{

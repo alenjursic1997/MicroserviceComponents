@@ -1,4 +1,5 @@
-﻿using ConfigCore.file;
+﻿using ConfigCore.common.interfaces;
+using ConfigCore.file;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
@@ -12,9 +13,9 @@ namespace Tests.ConfigCoreTests
 	[TestFixture]
 	public class FileConfigTest
 	{
-        private FileConfig _jsonFileConfig;
-        private FileConfig _xmlFileConfig;
-        private FileConfig _yamlFileConfig;
+        private ConfigSource _jsonFileConfig;
+        private ConfigSource _xmlFileConfig;
+        private ConfigSource _yamlFileConfig;
 
         [SetUp]
         public void Init()
