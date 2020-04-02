@@ -159,7 +159,6 @@ namespace DiscoveryCore.etcd
 		}
 		private async Task<ExecutionStatus> TTLUpdate()
 		{
-
 			return ExecutionStatus.Good();
 		}
 

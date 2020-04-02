@@ -9,7 +9,6 @@ namespace ConfigCore.common
 {
 	public static class Common
 	{
-
 		public static ServiceConfigurationValues loadServiceConfiguration(IConfig conf)
 		{
 			ServiceConfigurationValues toReturn = new ServiceConfigurationValues();

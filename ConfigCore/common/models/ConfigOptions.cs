@@ -3,10 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-/// <summary>
-/// V diplomski nalogi se ta objekt uporablja pri kreiranju novega Utila in Bundla
-/// </summary>
-
 namespace ConfigCore.common.models
 {
 	public class ConfigOptions

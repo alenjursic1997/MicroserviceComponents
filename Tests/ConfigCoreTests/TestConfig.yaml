@@ -31,3 +31,25 @@ settings:
       age: 22
     sale: Y
     parts: "streha,vrata,okna,stene,pohištvo"
+types:
+    int:
+        positive: 12
+        negative: -1234
+    string: beseda
+    double: 12.34
+    float: 2345.02
+    bool:
+        true: true
+        false: false
+        yes: yes
+        no: no
+        y: y
+        n: n
+        one: 1
+        zero: 0
+    char: x
+    array:
+        bool: "true,true,false"
+        string: "test1,test2,test3"
+        int: "1,2,3,4,5"
+    mojobjekt: "name=Ime;value=Vrednost"

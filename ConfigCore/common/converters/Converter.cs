@@ -67,6 +67,7 @@ namespace ConfigCore.common.converters
 			//if there is no useful converter, then use Convert.ChangeType method
 			try
 			{
+				FormatValueDependOnType(ref value, typeof(T));
 				return (T)Convert.ChangeType(value, typeof(T));
 			}
 			catch
@@ -75,6 +76,21 @@ namespace ConfigCore.common.converters
 			}
 		}
 
+		private void FormatValueDependOnType(ref string value, Type type)
+		{
+			var types = new List<Type>()
+			{
+				typeof(Double),
+				typeof(double),
+				typeof(Decimal),
+				typeof(decimal),
+				typeof(float)
+			};
 
+			if (types.Any(e => e == type))
+			{
+				value = value.Replace(".", ",");
+			}
+		}
 	}
 }
