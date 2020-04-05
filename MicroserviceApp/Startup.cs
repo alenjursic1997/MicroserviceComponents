@@ -4,6 +4,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using HealthCore.Extensions;
+using DiscoveryCore.extensions;
+using DiscoveryCore.discovery;
+using DiscoveryCore.common.models;
+using System.IO;
 
 namespace MicroserviceApp
 {
@@ -21,6 +25,12 @@ namespace MicroserviceApp
 		{
 			services.AddControllers();
 			services.AddKumuluzHealth(null);
+
+			services.AddKumuluzDiscovery(opt=>
+			{
+				opt.SetConfigFilePath(Path.GetFullPath("settings.yaml"));
+				opt.SetExtensions("etcd");
+			});
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

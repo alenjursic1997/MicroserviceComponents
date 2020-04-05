@@ -1,0 +1,55 @@
+﻿kumuluzee:
+  # name of our service
+  name: test-service
+  version: 1.0.0
+  server:
+    # url where our service will live
+    base-url: http://localhost:5000
+    http:
+      port: 5000
+      address: http://localhost
+  env: 
+    name: dev
+  config:
+    namespace: ''
+    etcd:
+      hosts: http://localhost:2379
+    consul:
+      hosts: http://localhost:8500
+  discovery:
+    ttl: 100
+    ping-interval: 20
+    consul:
+      hosts: http://localhost:8500
+    etcd:
+      hosts: http://localhost:2379
+settings:
+  location: Oštrc
+  house:
+    owner:
+      name: Alen
+      age: 22
+    sale: Y
+    parts: "streha,vrata,okna,stene,pohištvo"
+types:
+    int:
+        positive: 12
+        negative: -1234
+    string: beseda
+    double: 12.34
+    float: 2345.02
+    bool:
+        true: true
+        false: false
+        yes: yes
+        no: no
+        y: y
+        n: n
+        one: 1
+        zero: 0
+    char: x
+    array:
+        bool: "true,true,false"
+        string: "test1,test2,test3"
+        int: "1,2,3,4,5"
+    mojobjekt: "name=Ime;value=Vrednost"

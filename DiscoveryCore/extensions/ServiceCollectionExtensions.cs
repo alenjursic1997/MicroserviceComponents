@@ -5,22 +5,19 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DiscoveryCore
+namespace DiscoveryCore.extensions
 {
-	public static class ServiceConfig
+	public static class ServiceCollectionExtensions
 	{
-		private static IDiscovery _discovery;
-
 		public static IServiceCollection AddKumuluzDiscovery(this IServiceCollection services, Action<InitializationOptions> options)
 		{
 			InitializationOptions opt = new InitializationOptions();
 			options(opt);
-			_discovery = new Discovery(opt);
-			DiscoveryProvider._discovery = _discovery;
-			services.AddSingleton(_discovery);
+			var discovery = new Discovery(opt);
+			DiscoveryProvider._discovery = discovery;
+			services.AddSingleton(discovery);
 
 			return services;
 		}
-
 	}
 }

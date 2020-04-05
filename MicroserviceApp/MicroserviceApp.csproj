@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="settings.yaml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" />
   </ItemGroup>
 
@@ -12,6 +16,18 @@
     <ProjectReference Include="..\ConfigCore\ConfigCore.csproj" />
     <ProjectReference Include="..\DiscoveryCore\DiscoveryCore.csproj" />
     <ProjectReference Include="..\HealthCore\HealthCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="settings.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 

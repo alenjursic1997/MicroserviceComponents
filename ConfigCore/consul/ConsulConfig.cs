@@ -19,7 +19,7 @@ namespace ConfigCore.consul
 		private const int PRIORITY = 100;
 		private const string ADDRESS = "http://localhost:8500";
 
-		public ConsulClient client;
+		public IConsulClient client;
 		public int startRetryDelay;
 		public int maxRetryDelay;
 		public string nametag;

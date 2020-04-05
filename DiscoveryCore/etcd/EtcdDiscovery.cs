@@ -55,6 +55,7 @@ namespace DiscoveryCore.etcd
 				_client = new EtcdClient(sourceAddress,
 							username: username,
 							password: password,
+							clientKey: "to je neko ime",
 							caCert: cert);
 			}
 			else
@@ -140,11 +141,10 @@ namespace DiscoveryCore.etcd
 				return ExecutionStatus.Bad();
 			}
 
-			MemberAddRequest request = new MemberAddRequest();
-			request.PeerURLs.Add("http://localhost:5000");
-
-			MemberAddResponse res = await _client.MemberAddAsync(request);
-
+			var addReq = new MemberAddRequest();
+			addReq.PeerURLs.Add("http://localhost:1234");
+			MemberAddResponse res = await _client.MemberAddAsync(addReq);
+			
 
 			if (res.Header.MemberId <= 0)
 			{
