@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ConfigCore.common.converters
+﻿namespace ConfigCore.common.converters
 {
 	public abstract class BaseTypeConverter<T>
 	{

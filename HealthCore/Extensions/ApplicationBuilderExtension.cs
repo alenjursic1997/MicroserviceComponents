@@ -45,7 +45,6 @@ namespace HealthCore.Extensions
 					route,
 					route + "/live",
 					route + "/ready"
-					//route + "/UI"
 				};
 
 				if (c.Request.Path.HasValue == false)

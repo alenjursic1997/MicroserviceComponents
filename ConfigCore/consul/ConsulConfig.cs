@@ -1,12 +1,10 @@
 ﻿using ConfigCore.common;
-using ConfigCore.common.converters;
 using ConfigCore.common.interfaces;
 using ConfigCore.common.models;
 using ConfigCore.config;
 using Consul;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;

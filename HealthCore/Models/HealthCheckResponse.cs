@@ -10,9 +10,6 @@ namespace HealthCore.Models
 	[JsonObject]
 	public class HealthCheckResponse
 	{
-		private string _healthName;
-		private object _data;
-
 		public void Up()
 		{
 			Status = State.UP;
@@ -24,31 +21,11 @@ namespace HealthCore.Models
 
 		public State Status { get; private set; }
 
-		public string Name
-		{
-			get
-			{
-				return _healthName;
-			}
-			set
-			{
-				_healthName = value;
-			}
-		}
+		public string Name { get; set; }
 
 		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-		public object Data
-		{
-			get
-			{
-				return _data;
-			}
-			set
-			{
-				_data = value;
-			}
-		}
-		
+		public object Data { get; set; }
+
 	}
 
 	[JsonConverter(typeof(StringEnumConverter))]

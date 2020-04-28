@@ -14,7 +14,6 @@ namespace HealthCore.Services
 	{
 		private static Dictionary<string, HealthCheck> _healthChecks;
 		private readonly ILogger _logger;
-		private bool _isEnabled;
 
 		public Health(HealthOptions healthOptions)
 		{
@@ -61,15 +60,6 @@ namespace HealthCore.Services
 				response.Name = pair.Key;
 				yield return response;
 			}
-		}
-
-		public bool IsEnabled()
-		{
-			return _isEnabled;
-		}
-		public void Enable(bool enable)
-		{
-			_isEnabled = enable;
 		}
 
 		private bool IsValidType(HealthCheck check, HealthType type)

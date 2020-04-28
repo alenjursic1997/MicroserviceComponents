@@ -1,10 +1,8 @@
-﻿using System;
+﻿using HealthCore.Attributes;
+using HealthCore.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
-using HealthCore.Attributes;
-using HealthCore.Models;
 
 namespace HealthCore.Checks
 {

@@ -37,7 +37,6 @@ namespace Tests.ConfigCoreTests
         {
             Assert.AreEqual("value1", _config.GetValue("key.test1"));
             Assert.AreEqual(null, _config.GetValue("unexisting"));
-
         }
     }
 }

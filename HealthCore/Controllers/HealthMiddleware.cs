@@ -11,13 +11,12 @@ using System.Threading.Tasks;
 namespace HealthCore.Controllers
 {
 	public class HealthMiddleware
-	{
-        private readonly RequestDelegate _next;
+	{ 
+
         private readonly IHealth _healthCheckRegistry;
 
 		public HealthMiddleware(RequestDelegate next, IHealth healthCheckRegistry)
 		{
-            _next = next;
 			_healthCheckRegistry = healthCheckRegistry;
 		}
 
@@ -44,18 +43,8 @@ namespace HealthCore.Controllers
 				context.Response.StatusCode = StatusCodes.Status200OK;
 			}
 
-			if (paths[paths.Length - 1] == "UI" && false) //currently not in use
-			{
-				context.Response.ContentType = "text/html";
-				string wrapper = @"<html><head></head><body><h1>HELLO</h1><div></div></body></html>";
-				await context.Response.WriteAsync(wrapper);
-			}
-			else
-			{
-				context.Response.ContentType = "application/json";
-				await context.Response.WriteAsync(JsonConvert.SerializeObject(healthResponse));
-			}
-
+			context.Response.ContentType = "application/json";
+			await context.Response.WriteAsync(JsonConvert.SerializeObject(healthResponse));
         }
 
 		private HealthResponse GetHealthByType(HealthType type)

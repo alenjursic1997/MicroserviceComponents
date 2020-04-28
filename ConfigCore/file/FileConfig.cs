@@ -6,7 +6,6 @@ using System;
 using System.IO;
 using System.Xml;
 using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace ConfigCore.file
 {

@@ -26,9 +26,5 @@ namespace HealthCore.Services
 		/// </summary>
 		/// <returns>List of responses</returns>
 		IEnumerable<HealthCheckResponse> GetResults(HealthType type);
-
-		bool IsEnabled();
-
-		void Enable(bool enable);
 	}
 }

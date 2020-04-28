@@ -1,15 +1,12 @@
-﻿using ConfigCore.common.interfaces;
+﻿using ConfigCore.common;
+using ConfigCore.common.interfaces;
 using ConfigCore.common.models;
-using ConfigCore.common;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using ConfigCore.config;
-using Microsoft.Extensions.Logging;
-using System.Security.Cryptography.X509Certificates;
 using dotnet_etcd;
 using Etcdserverpb;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 
 namespace ConfigCore.etcd
 {

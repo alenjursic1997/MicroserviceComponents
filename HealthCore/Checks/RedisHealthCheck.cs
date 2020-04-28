@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using HealthCore.Models;
+﻿using HealthCore.Models;
 using StackExchange.Redis;
 
 namespace HealthCore.Checks

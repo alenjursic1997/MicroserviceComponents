@@ -8,39 +8,15 @@ namespace HealthCore.Models
 {
 	public class HealthResponse
 	{
-		private State _outcome;
-
-		private IEnumerable<HealthCheckResponse> _checks; 
-
 		public HealthResponse()
 		{
-			_checks = new List<HealthCheckResponse>();
+			Checks = new List<HealthCheckResponse>();
 		}
 
 		[JsonConverter(typeof(StringEnumConverter))]
-		public State Status 
-		{
-			get
-			{
-				return _outcome;
-			}
-			set
-			{
-				_outcome = value;
-			}
-		}
+		public State Status { get; set; }
 
-		public IEnumerable<HealthCheckResponse> Checks 
-		{
-			get
-			{
-				return _checks;
-			}
-			set
-			{
-				_checks = value;
-			}
-		}
+		public IEnumerable<HealthCheckResponse> Checks { get; set; }
 
 
 

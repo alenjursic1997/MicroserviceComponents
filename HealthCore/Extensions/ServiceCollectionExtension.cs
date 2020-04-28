@@ -9,7 +9,6 @@ namespace HealthCore.Extensions
 {
 	public static class ServiceCollectionExtension
 	{
-
 		public static IServiceCollection AddKumuluzHealth(this IServiceCollection services, Action<HealthOptions> options = null)
 		{
 			HealthOptions opt = new HealthOptions();

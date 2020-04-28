@@ -1,9 +1,4 @@
-﻿using ConfigCore.common.interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ConfigCore.common.converters
+﻿namespace ConfigCore.common.converters
 {
 	public class BoolConverter : BaseTypeConverter<bool>
 	{

@@ -1,5 +1,4 @@
-﻿using ConfigCore.common;
-using ConfigCore.common.converters;
+﻿using ConfigCore.common.converters;
 using ConfigCore.common.interfaces;
 using ConfigCore.common.models;
 using ConfigCore.consul;
@@ -10,10 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 
 namespace ConfigCore.config
 {

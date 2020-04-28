@@ -1,14 +1,8 @@
 ﻿using ConfigCore.common.interfaces;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
-/// <summary>
-/// Zaenkrat deluje samo za uporabniške spremenljivke
-/// </summary>
 
 namespace ConfigCore.environment
 {

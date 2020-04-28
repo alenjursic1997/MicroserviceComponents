@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ConfigCore.common;
-
-namespace ConfigCore.config
+﻿namespace ConfigCore.config
 {
 	public static class ConfigProvider
 	{

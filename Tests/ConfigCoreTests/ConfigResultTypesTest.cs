@@ -1,15 +1,11 @@
 ﻿using ConfigCore.common.converters;
-using ConfigCore.common.interfaces;
 using ConfigCore.common.models;
 using ConfigCore.config;
 using ConfigCore.file;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace Tests.ConfigCoreTests
 {

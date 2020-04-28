@@ -1,14 +1,12 @@
-﻿using System;
+﻿using HealthCore.Models;
+using System;
 using System.Collections.Generic;
-using System.Text;
-using HealthCore.Models;
 using System.Data.SqlClient;
 
 namespace HealthCore.Checks
 {
 	public class SqlServerHealthCheck : HealthCheck
 	{
-
 		private readonly string _connectionString;
 		private HealthCheckResponse response = new HealthCheckResponse();
 		private Dictionary<string, object> _data = new Dictionary<string, object>();
