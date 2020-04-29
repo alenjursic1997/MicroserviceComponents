@@ -21,14 +21,18 @@ namespace ConfigCore.config
 
 		public Config(ConfigOptions options)
 		{
+			//if logger is null, create new logger
 			_logger = options.Logger ?? new NullLogger<Config>();
 
+			//create new converter
 			_converter = new Converter(_logger);
 
 			_configSources = new List<ConfigSource>();
 
+			//create and add new evironment configuration
 			_configSources.Add(new EnvConfig(_logger));
 
+			//create and add new file configuration
 			FileConfig fileConfig = new FileConfig(_logger, options.ConfigFilePath);
 			if (fileConfig != null)
 			{
@@ -39,11 +43,11 @@ namespace ConfigCore.config
 				_logger.LogInformation("Default path 'config.yaml' is used for configuration file.");
 			}
 
-			//Sort current list of config sources by their priority;
+			//sort current list of config sources by their priority;
 			SortConfigSources();
 
 			//add extension config sources
-			if (options.Extensions == null || options.Extensions == "")
+			if (options.Extensions == null || string.IsNullOrWhiteSpace(options.Extensions))
 				return;
 			var configExtensions = options.Extensions.Split(',');
 			foreach (string extension in configExtensions)
@@ -51,10 +55,12 @@ namespace ConfigCore.config
 				switch (extension.ToLower())
 				{
 					case "consul":
+						//create and add new consul configuration
 						ConsulConfig consulConfig = new ConsulConfig(this, _logger, _converter);
 						_configSources.Add(consulConfig);
 						break;
 					case "etcd":
+						//create and add new etcd configuration
 						EtcdConfig etcdConfig = new EtcdConfig(this, _logger, _converter);
 						_configSources.Add(etcdConfig);
 						break;
@@ -64,15 +70,18 @@ namespace ConfigCore.config
 				}
 			}
 
-			//Sort current list of config sources by their priority;
+			//sort current list of config sources by their priority;
 			SortConfigSources();
 		}
 
+		//get all configuration sources
 		public List<ConfigSource> GetConfigSources()
 		{
 			return _configSources;
 		}
 
+		//get value for given key from all configuration source with lower priority number
+		//value is returned as string
 		private string GetValue(string key)
 		{
 			string value = null;
@@ -87,12 +96,16 @@ namespace ConfigCore.config
 			return value;
 		}
 
+		//return value for given key as type of T 
 		public T Get<T>(string key)
 		{
+			//get value from configuration sources
 			var value = GetValue(key);
+			//convert string value to type of T
 			return _converter.ConvertTo<T>(value);
 		}
 
+		//subscribe action of type T to on value changes for given key
 		public void Subscribe<T>(string key, Action<T> callback)
 		{
 			foreach(ConfigSource cf in _configSources)
@@ -102,6 +115,7 @@ namespace ConfigCore.config
 		}
 
 
+		//sort all configuration sources by their priority number (from min. to max.)
 		private void SortConfigSources()
 		{
 			_configSources = _configSources.OrderBy(s => s.GetPriority()).ToList();

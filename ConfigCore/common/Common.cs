@@ -1,15 +1,16 @@
 ﻿using ConfigCore.common.models;
 using ConfigCore.config;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConfigCore.common
 {
 	public static class Common
 	{
-		public static ServiceConfigurationValues loadServiceConfiguration(IConfig conf)
+		/// <summary>
+		/// Load service configuration values
+		/// </summary>
+		/// <param name="conf">Implementation of IConfig interface</param>
+		/// <returns>Service configuration values</returns>
+		public static ServiceConfigurationValues LoadServiceConfiguration(IConfig conf)
 		{
 			ServiceConfigurationValues toReturn = new ServiceConfigurationValues();
 
@@ -19,13 +20,13 @@ namespace ConfigCore.common
 			toReturn.startRetryDelay = conf.Get<int>("kumuluzee.config.start-retry-delay-ms");
 			toReturn.maxRetryDelay = conf.Get<int>("kumuluzee.config.max-retry-delay-ms");
 
-			if (toReturn.envName == null || toReturn.envName == "")
+			if (string.IsNullOrWhiteSpace(toReturn.envName))
 				toReturn.envName = "dev";
 
-			if (toReturn.name == null)
+			if (string.IsNullOrWhiteSpace(toReturn.name))
 				toReturn.name = "";
 
-			if (toReturn.version == null || toReturn.version == "")
+			if (string.IsNullOrWhiteSpace(toReturn.version))
 				toReturn.version = "1.0.0";
 
 			if (toReturn.startRetryDelay == 0)

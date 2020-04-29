@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace ConfigCore.common.converters
 {
+	/// <summary>
+	/// Converter class is used for converting string values to wanted type.
+	/// </summary>
 	public class Converter : IConverter
 	{
 		private List<object> _converters;
@@ -13,18 +16,19 @@ namespace ConfigCore.common.converters
 
 		public Converter(ILogger logger)
 		{
+			//set logger instance
 			_logger = logger;
 
 			_logger.LogInformation($"Creating instances of TypeConverter implementations");
 
-			//getting all implementations of ITypeConverter
-
+			//getting all implementations of BaseTypeConverter
 			var lookup = typeof(BaseTypeConverter<>);
 			_converters = AppDomain.CurrentDomain.GetAssemblies()
 				.SelectMany(assembly => assembly.GetTypes())
 				.Where(x => x.IsClass && !x.IsAbstract && IsInheritedFrom(x, lookup))
 				.Select(x => Activator.CreateInstance(x))
 				.ToList();
+			//order converters by their priority number
 			_converters.OrderByDescending(e => e.GetType().GetProperty("Priority").GetValue(e)).ToList();
 		}
 
@@ -41,12 +45,14 @@ namespace ConfigCore.common.converters
 			return IsInheritedFrom(baseType, Lookup);
 		}
 
+		//convert value from string to type T
 		public T ConvertTo<T>(string value)
 		{
 			//if value is null, return default value for required type
 			if (value == null)
 				return default(T);
 
+			//firstly check if there is any custom converter that can convert string to type T
 			foreach(var converter in _converters)
 			{
 				try
@@ -57,10 +63,7 @@ namespace ConfigCore.common.converters
 						return (T)method.Invoke(converter, new object[] { value });
 					}
 				}
-				catch
-				{
-
-				}
+				catch { }
 			}
 
 			//if there is no useful converter, then use Convert.ChangeType method
@@ -69,12 +72,14 @@ namespace ConfigCore.common.converters
 				FormatValueDependOnType(ref value, typeof(T));
 				return (T)Convert.ChangeType(value, typeof(T));
 			}
-			catch
+			catch 
 			{
+				//id value convertion has failed, return default value of type T
 				return default(T);
 			}
 		}
 
+		//replacing dots with commas if type is included it list 'types'
 		private void FormatValueDependOnType(ref string value, Type type)
 		{
 			var types = new List<Type>()

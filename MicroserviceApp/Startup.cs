@@ -31,6 +31,7 @@ namespace MicroserviceApp
 				opt.SetConfigFilePath(Path.GetFullPath("settings.yaml"));
 				opt.SetExtensions("etcd");
 			});
+			DiscoveryProvider.GetDiscovery().RegisterService();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

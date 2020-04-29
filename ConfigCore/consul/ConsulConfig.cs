@@ -27,35 +27,34 @@ namespace ConfigCore.consul
 
 		public ConsulConfig(IConfig conf, ILogger logger, IConverter converter)
 		{
-			_logger = logger;
-			_config = conf;
-			_converter = converter;
+			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
+			_config = conf ?? throw new ArgumentNullException(nameof(conf));
+			_converter = converter ?? throw new ArgumentNullException(nameof(converter));
 
 			//getting source address
 			string sourceAddress = conf.Get<string>("kumuluzee.config.consul.hosts");
-			if(!string.IsNullOrEmpty(sourceAddress))
+			if (!string.IsNullOrWhiteSpace(sourceAddress))
+			{
 				sourceAddress = ADDRESS;
-
-
-			//creating consul client
-			if (sourceAddress.Length == 0)
+				client = new ConsulClient(c =>
+				{
+					c.Address = new Uri(sourceAddress);
+				});
+			}
+			else
 			{
 				client = null;
 			}
 
-			client = new ConsulClient(c =>
-			{
-				c.Address = new Uri(sourceAddress);
-			});
-
-
-
+			//if client is null, return 
 			if (client == null)
 			{
 				_logger.LogWarning("Thare was problem creating consul client.");
+				return;
 			}
 
-			ServiceConfigurationValues scv = Common.loadServiceConfiguration(conf);
+			//get service configuration values from configuration sources
+			ServiceConfigurationValues scv = Common.LoadServiceConfiguration(conf);
 			startRetryDelay = scv.startRetryDelay;
 			maxRetryDelay = scv.maxRetryDelay;
 			nametag = "environments/" + scv.envName + "/services/" + scv.name + "/" + scv.version + "/config";
@@ -64,12 +63,12 @@ namespace ConfigCore.consul
 			if (resultNametag != null)
 				nametag = resultNametag;
 
-			if (!string.IsNullOrEmpty(nametag))
+			if (!string.IsNullOrWhiteSpace(nametag))
 				nametag = nametag + "/";
 		}
 
 
-
+		//try to get value from consul configuration source
 		public string GetValue(string key)
 		{
 			IKVEndpoint kv = this.client?.KV;
@@ -78,7 +77,7 @@ namespace ConfigCore.consul
 			{
 				key = key.Replace('.', '/');
 
-				var value = kv.Get(nametag + key)?.Result?.Response?.Value; //TODO: podati je treba pravi string
+				var value = kv.Get(nametag + key)?.Result?.Response?.Value;
 				if (value == null)
 					return null;
 
@@ -106,18 +105,22 @@ namespace ConfigCore.consul
 			Watch(key, callback);
 		}
 
-		public async void Watch<T>(string key, Action<T> callback, string oldValue = "", int retryDelay = 0, ulong waitIndex = 0)
+		public async void Watch<T>(string key, Action<T> callback, string oldValue = "", int retryDelay = 0)
 		{
+			//stop watching changes if callback is null
 			if (callback == null)
 				return;
+
+
 			var cb = new Action<object>(o => callback((T)o)); //When using converter...is this even needed?
 
 			key = key.Replace('.', '/');
-			var options = new QueryOptions() { WaitIndex = 0, WaitTime = TimeSpan.FromMinutes(10) };
-
+			
+			//trying to get response from consul configuration
 			QueryResult<KVPair> response;
 			try
 			{
+				var options = new QueryOptions() { WaitIndex = 0, WaitTime = TimeSpan.FromMinutes(10) };
 				response = await client.KV.Get(key, options);
 			}
 			catch
@@ -137,11 +140,11 @@ namespace ConfigCore.consul
 				var value = Encoding.UTF8.GetString(kvPair.Value, 0, kvPair.Value.Length);
 				if (value != oldValue)
 					cb(_converter.ConvertTo<T>(value));
-				Watch(key, callback, value, startRetryDelay, response.LastIndex);
+				Watch(key, callback, value, startRetryDelay);
 				return;
 			}
 
-			Watch(key, callback, oldValue, retryDelay: startRetryDelay, waitIndex: response.LastIndex);
+			Watch(key, callback, oldValue, retryDelay: startRetryDelay);
 
 			return;
 		}

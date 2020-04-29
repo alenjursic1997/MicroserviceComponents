@@ -26,7 +26,7 @@ namespace ConfigCore.etcd
 
 		public EtcdConfig(IConfig conf, ILogger logger, IConverter converter)
 		{
-			_logger = logger;
+			_logger = logger ?? throw new ArgumentNullException(nameof(logger)); ;
 			_config = conf;
 			_converter = converter;
 
@@ -56,7 +56,7 @@ namespace ConfigCore.etcd
 				_logger.LogWarning("Thare was problem creating etcd client.");
 			}
 
-			ServiceConfigurationValues scv = Common.loadServiceConfiguration(conf);
+			ServiceConfigurationValues scv = Common.LoadServiceConfiguration(conf);
 			startRetryDelay = scv.startRetryDelay;
 			maxRetryDelay = scv.maxRetryDelay;
 			nametag = "environments/" + scv.envName + "/services/" + scv.name + "/" + scv.version + "/config/";
