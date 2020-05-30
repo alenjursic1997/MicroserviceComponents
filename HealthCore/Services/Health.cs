@@ -51,8 +51,7 @@ namespace HealthCore.Services
 
 			foreach (var pair in _healthChecks)
 			{
-				if (!IsValidType(pair.Value, type))
-					continue;
+				if (!IsValidType(pair.Value, type)) continue;
 
 				var response = pair.Value?.CheckResponse();
 				if (response == null) continue;

@@ -5,7 +5,6 @@ using DiscoveryCore.common.interfaces;
 using DiscoveryCore.common.models;
 using dotnet_etcd;
 using Etcdserverpb;
-using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;

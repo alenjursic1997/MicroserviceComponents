@@ -35,13 +35,9 @@ namespace HealthCore.Controllers
 
 			
 			if (healthResponse == null || healthResponse.Status == State.DOWN)
-			{
 				context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-			}
 			else
-			{
 				context.Response.StatusCode = StatusCodes.Status200OK;
-			}
 
 			context.Response.ContentType = "application/json";
 			await context.Response.WriteAsync(JsonConvert.SerializeObject(healthResponse));

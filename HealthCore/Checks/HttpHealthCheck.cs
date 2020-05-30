@@ -26,19 +26,14 @@ namespace HealthCore.Checks
 			_data.Clear();
 
 			if (_urls == null)
-			{
 				return null;
-			}
 
 			response.Up();
 
 			foreach (string url in _urls)
-			{
 				checkHttpStatus(ref response, url);
-			}
 
 			response.Data = _data;
-
 			return response;
 		}
 
@@ -52,14 +47,10 @@ namespace HealthCore.Checks
 				myRequest = (HttpWebRequest)WebRequest.Create(url);
 				myResponse = (HttpWebResponse)myRequest.GetResponse();
 				if ((int)myResponse.StatusCode >=200 && (int)myResponse.StatusCode < 300)
-				{
 					_data.Add(url, State.UP);
-				}
 				else
-				{
 					response.Down();
 					_data.Add(url, State.DOWN);
-				}
 			}
 			catch
 			{
@@ -69,12 +60,8 @@ namespace HealthCore.Checks
 			finally
 			{
 				if (myResponse != null)
-				{
 					myResponse.Close();
-				}
 			}
-
-
 		}
 	}
 }
