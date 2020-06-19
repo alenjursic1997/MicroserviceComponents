@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Etcdserverpb;
 
 namespace DiscoveryCore.etcd
 {
@@ -51,6 +52,7 @@ namespace DiscoveryCore.etcd
 			{
 				var password = _config.Get<string>("kumuluzee.discovery.etcd.password") ?? "";
 				var cert = _config.Get<string>("kumuluzee.discovery.etcd.password") ?? "";
+
 				_client = new EtcdClient(sourceAddress,
 							username: username,
 							password: password,
@@ -131,7 +133,6 @@ namespace DiscoveryCore.etcd
 				else
 					Run(retryDelayMs * 2);
 			}
-
 		}
 		private async Task<ExecutionStatus> Register()
 		{
@@ -142,9 +143,8 @@ namespace DiscoveryCore.etcd
 
 			var addReq = new MemberAddRequest();
 			addReq.PeerURLs.Add("http://localhost:1234");
-			MemberAddResponse res = await _client.MemberAddAsync(addReq);
-			
 
+			var res = await _client.MemberAddAsync(addReq);
 			if (res.Header.MemberId <= 0)
 			{
 				return ExecutionStatus.Bad();

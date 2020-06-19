@@ -50,9 +50,7 @@ namespace DiscoveryCore.consul
 			//creating consul client
 			_client = null;
 			if (sourceAddress.Length == 0)
-			{
 				_client = null;
-			}
 			try
 			{
 				_client = new ConsulClient(c =>
@@ -66,9 +64,7 @@ namespace DiscoveryCore.consul
 			}
 
 			if (_client == null)
-			{
 				_logger.LogWarning("Thare was problem creating consul client.");
-			}
 
 			_protocol = _config.Get<string>("kumuluzee.discovery.consul.protocol");
 			if (string.IsNullOrEmpty(_protocol))
@@ -100,9 +96,7 @@ namespace DiscoveryCore.consul
 			{
 				status = await TTLUpdate();
 				if(!status.Successful)
-				{
 					_consulServiceInstance.IsRegistered = false;
-				}
 			}
 			else
 			{
@@ -117,9 +111,7 @@ namespace DiscoveryCore.consul
 			if (status.Successful)
 			{
 				if (!firstRunStatus)
-				{
 					await Task.Delay(_regConfig.Discovery.PingInterval);
-				}
 				Run(_startRetryDelay);
 			}
 			else
@@ -130,7 +122,6 @@ namespace DiscoveryCore.consul
 				else
 					Run(retryDelayMs * 2);
 			}
-
 		}
 		private async Task<ExecutionStatus> TTLUpdate()
 		{

@@ -42,9 +42,8 @@ namespace ConfigCore.consul
 				});
 			}
 			else
-			{
 				client = null;
-			}
+
 
 			//if client is null, return 
 			if (client == null)

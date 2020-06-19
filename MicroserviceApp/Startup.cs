@@ -28,7 +28,7 @@ namespace MicroserviceApp
 
 			services.AddKumuluzDiscovery(opt=>
 			{
-				opt.SetConfigFilePath(Path.GetFullPath("settings.yaml"));
+				opt.SetConfigFilePath(Path.GetFullPath("config.yaml"));
 				opt.SetExtensions("etcd");
 			});
 			DiscoveryProvider.GetDiscovery().RegisterService();
