@@ -46,11 +46,13 @@ namespace HealthCore.Checks
 			{
 				myRequest = (HttpWebRequest)WebRequest.Create(url);
 				myResponse = (HttpWebResponse)myRequest.GetResponse();
-				if ((int)myResponse.StatusCode >=200 && (int)myResponse.StatusCode < 300)
+				if ((int)myResponse.StatusCode >= 200 && (int)myResponse.StatusCode < 300)
 					_data.Add(url, State.UP);
 				else
+				{
 					response.Down();
 					_data.Add(url, State.DOWN);
+				}
 			}
 			catch
 			{

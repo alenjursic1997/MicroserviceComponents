@@ -8,6 +8,7 @@ using DiscoveryCore.extensions;
 using DiscoveryCore.discovery;
 using DiscoveryCore.common.models;
 using System.IO;
+using HealthCore.Checks;
 
 namespace MicroserviceApp
 {
@@ -24,14 +25,19 @@ namespace MicroserviceApp
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddControllers();
-			services.AddKumuluzHealth(null);
 
-			services.AddKumuluzDiscovery(opt=>
+			services.AddKumuluzHealth(options =>
 			{
-				opt.SetConfigFilePath(Path.GetFullPath("config.yaml"));
-				opt.SetExtensions("etcd");
+				options.RegisterHealthCheck("http_health_check", new HttpHealthCheck("https://github.com/"));
+				options.RegisterHealthCheck("as", new DiskSpaceHealthCheck(500, SpaceUnit.Gigabyte));
 			});
-			DiscoveryProvider.GetDiscovery().RegisterService();
+
+			//services.AddKumuluzDiscovery(opt=>
+			//{
+			//	opt.SetConfigFilePath(Path.GetFullPath("config.yaml"));
+			//	opt.SetExtensions("etcd");
+			//});
+			//DiscoveryProvider.GetDiscovery().RegisterService();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
