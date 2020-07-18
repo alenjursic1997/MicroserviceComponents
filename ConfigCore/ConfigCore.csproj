@@ -9,14 +9,11 @@
 		<Description>ConfigCoreis used for configuring .NET Core service.</Description>
 		<PackageTags>.NET Core, Configuration, Config, Microservice, API</PackageTags>
 		<NeutralLanguage>English</NeutralLanguage>
+		<Version>1.0.1</Version>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<NuGetPublishLocation>C:\Users\ajursic\Desktop\test</NuGetPublishLocation>
-	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<NuGetPublishType>remote</NuGetPublishType>
-		<NuGetPublishLocation>http://tracbb/v3/index.json</NuGetPublishLocation>
+		<NuGetPublishLocation>D:\00_Programiranje\04_Nuget_packages</NuGetPublishLocation>
 	</PropertyGroup>
 
 	<ItemGroup>

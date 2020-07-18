@@ -22,29 +22,29 @@ namespace DiscoveryCore.consul
 		private readonly ILogger _logger;
 
 		private ConsulClient _client;
+		private RegisterConfiguration _regConfig;
+		private ConsulServiceInstance _consulServiceInstance;
+
 		public int _startRetryDelay;
 		public int _maxRetryDelay;
 		public string _protocol;
-		bool _canRun;
+		public bool _canRun;
 		public string _lastKnownService;
 		public List<GatewayURLWatch> _gatewayURLs;
-
-		private RegisterConfiguration _regConfig;
-		private ConsulServiceInstance _consulServiceInstance;
 
 		public ConsulDiscovery(ConfigOptions configOptions, ILogger logger)
 		{
 			_configOptions = configOptions;
 			_config = new Config(configOptions);
 			_logger = logger;
+
 			var delays = Common.GetRetryDelays(_config);
 			_startRetryDelay = delays.StartRetryDelay;
 			_maxRetryDelay = delays.MaxRetryDelay;
-			//logging
 
 			//getting source address
 			string sourceAddress = _config.Get<string>("kumuluzee.discovery.consul.hosts");
-			if (string.IsNullOrEmpty(sourceAddress))
+			if (string.IsNullOrWhiteSpace(sourceAddress))
 				sourceAddress = ADDRESS;
 
 			//creating consul client
@@ -210,11 +210,9 @@ namespace DiscoveryCore.consul
 
 			foreach (var discovery in allDiscoveries) 
 			{
-				var watchNamespace = $"/environments/{options.Environment}/services/{options.ServiceName}/{discovery.Version.ToString()}";
+				var watchNamespace = $"/environments/{options.Environment}/services/{options.ServiceName}/{discovery.Version}";
 
-				ConfigOptions confOpt = _configOptions;
-				confOpt.SetExtensionNamespace(watchNamespace);
-				Config config = new Config(confOpt);
+				Config config = new Config(_configOptions);
 
 				if(_gatewayURLs.Where(e => e.Id == watchNamespace).Any() == false)
 				{
@@ -284,11 +282,6 @@ namespace DiscoveryCore.consul
 		public string VersionTag { get; set; }
 		public bool IsSingleton { get; set; }
 		public bool IsRegistered { get; set; }
-
-		public ConsulServiceInstance()
-		{
-
-		}
 
 		public ConsulServiceInstance(RegisterConfiguration regConfig, bool isSingleton = true)
 		{

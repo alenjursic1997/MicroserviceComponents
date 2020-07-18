@@ -57,7 +57,7 @@ namespace ConfigCore.consul
 			ServiceConfigurationValues scv = Common.LoadServiceConfiguration(_config);
 			startRetryDelay = scv.startRetryDelay;
 			maxRetryDelay = scv.maxRetryDelay;
-			nametag = "environments/" + scv.envName + "/services/" + scv.name + "/" + scv.version + "/config";
+			nametag = $"environments/{ scv.envName}/services/{scv.name}/{scv.version}/config";
 
 
 			var resultNametag = _config.Get<string>("kumuluzee.config.namespace");
@@ -74,7 +74,7 @@ namespace ConfigCore.consul
 		{
 			IKVEndpoint kv = this.client?.KV;
 
-			try
+			try 
 			{
 				key = key.Replace('.', '/');
 
@@ -112,7 +112,6 @@ namespace ConfigCore.consul
 			if (callback == null)
 				return;
 
-
 			var cb = new Action<object>(o => callback((T)o)); //When using converter...is this even needed?
 
 			key = key.Replace('.', '/');
@@ -121,17 +120,18 @@ namespace ConfigCore.consul
 			QueryResult<KVPair> response;
 			try
 			{
-				var options = new QueryOptions() { WaitIndex = 0, WaitTime = TimeSpan.FromMinutes(10) };
-				response = await client.KV.Get(key, options);
+				await Task.Delay(TimeSpan.FromMilliseconds(retryDelay));
+				response = await client.KV.Get(nametag + key);
 			}
 			catch
 			{
 				response = null;
 			}
 
-			if (response == null || response.StatusCode != HttpStatusCode.OK) { 
-				await Task.Delay(TimeSpan.FromMilliseconds(retryDelay));
-				Watch(key, callback, oldValue, Math.Max(2 * retryDelay, maxRetryDelay));
+			if (response == null || response.StatusCode != HttpStatusCode.OK) {
+				if (retryDelay == 0)
+					retryDelay = startRetryDelay;
+				Watch(key, callback, oldValue, Math.Min(2 * retryDelay, maxRetryDelay));
 				return;
 			}
 
@@ -145,10 +145,8 @@ namespace ConfigCore.consul
 				return;
 			}
 
-			Watch(key, callback, oldValue, retryDelay: startRetryDelay);
+			Watch(key, callback, oldValue, startRetryDelay);
 			return;
 		}
-
-
 	}
 }

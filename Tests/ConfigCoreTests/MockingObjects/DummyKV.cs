@@ -65,10 +65,10 @@ namespace Tests.ConfigCoreTests.MockingObjects
 			var pair = new KVPair(key);
 			queryRes.Response = pair;
 
-			if (key == "key/test1")
-			{
-				queryRes.Response.Value = new UTF8Encoding().GetBytes("value1");
-			}
+			if (key == "key/value")
+				queryRes.Response.Value = new UTF8Encoding().GetBytes("value");
+			else if (key == "key/123")
+				queryRes.Response.Value = new UTF8Encoding().GetBytes("123");
 			else
 			{
 				queryRes.Response.Value = null;

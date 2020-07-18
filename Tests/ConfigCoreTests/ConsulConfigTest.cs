@@ -28,15 +28,27 @@ namespace Tests.ConfigCoreTests
             IConfig config = new Config(opt);
 
             _config = new ConsulConfig(config, nullableLogger, new Converter(nullableLogger));
-
             _config.client = new DummyConsulClient();
         }
 
         [Test]
         public void GetValues()
         {
-            Assert.AreEqual("value1", _config.GetValue("key.test1"));
+            Assert.AreEqual("value", _config.GetValue("key.value"));
+            Assert.AreEqual("123", _config.GetValue("key.123"));
             Assert.AreEqual(null, _config.GetValue("unexisting"));
+        }
+
+        [Test]
+        public void GetName()
+        {
+            Assert.AreEqual("consul", _config.GetName());
+        }
+
+        [Test]
+        public void GetPriority()
+        {
+            Assert.AreEqual(100, _config.GetPriority());
         }
     }
 }
