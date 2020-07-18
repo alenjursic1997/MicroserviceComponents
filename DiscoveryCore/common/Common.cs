@@ -11,24 +11,17 @@ namespace DiscoveryCore.common
 {
 	public static class Common
 	{
-		public static RetryDelays GetRetryDelays(IConfig config)
+		public static (int startRetryDelay, int maxRetryDelay) GetRetryDelays(IConfig config)
 		{
-			int? srd = null;
-			int? mrd = null;
+			int srd = 0, mrd = 0;
 
 			if (config != null)
 			{
-				srd = config.Get<int?>("kumuluzee.config.start-retry-delay-ms");
-				mrd = config.Get<int?>("kumuluzee.config.max-retry-delay-ms");
+				srd = config.Get<int?>("kumuluzee.config.start-retry-delay-ms") ?? 500;
+				mrd = config.Get<int?>("kumuluzee.config.max-retry-delay-ms") ?? 900000;
 			}
 
-			RetryDelays rd = new RetryDelays()
-			{
-				StartRetryDelay = srd ?? 500,
-				MaxRetryDelay = mrd ?? 900000
-			};
-
-			return rd;
+			return (srd, mrd);
 		}
 
 		public static RegisterConfiguration GetServiceRegisterConfiguration(IConfig config, RegisterOptions options)

@@ -33,8 +33,8 @@ namespace DiscoveryCore.discovery
 			{
 				case "consul": _discoverySource = new ConsulDiscovery(_configOptions, _logger);
 					break;
-				case "etcd": _discoverySource = new EtcdDiscovery(_configOptions, _logger);
-					break;
+				//case "etcd": _discoverySource = new EtcdDiscovery(_configOptions, _logger);
+				//	break;
 				default:
 					break;
 			}

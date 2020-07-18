@@ -17,7 +17,6 @@ namespace DiscoveryCore.consul
 	{
 		private const string ADDRESS = "http://localhost:8500";
 
-		private ConfigOptions _configOptions;
 		private readonly IConfig _config;
 		private readonly ILogger _logger;
 
@@ -34,13 +33,10 @@ namespace DiscoveryCore.consul
 
 		public ConsulDiscovery(ConfigOptions configOptions, ILogger logger)
 		{
-			_configOptions = configOptions;
 			_config = new Config(configOptions);
 			_logger = logger;
 
-			var delays = Common.GetRetryDelays(_config);
-			_startRetryDelay = delays.StartRetryDelay;
-			_maxRetryDelay = delays.MaxRetryDelay;
+			(_startRetryDelay, _maxRetryDelay) = Common.GetRetryDelays(_config);
 
 			//getting source address
 			string sourceAddress = _config.Get<string>("kumuluzee.discovery.consul.hosts");
@@ -48,9 +44,6 @@ namespace DiscoveryCore.consul
 				sourceAddress = ADDRESS;
 
 			//creating consul client
-			_client = null;
-			if (sourceAddress.Length == 0)
-				_client = null;
 			try
 			{
 				_client = new ConsulClient(c =>
@@ -58,7 +51,7 @@ namespace DiscoveryCore.consul
 					c.Address = new Uri(sourceAddress);
 				});
 			}
-			catch (Exception e)
+			catch
 			{
 				_client = null;
 			}
@@ -67,7 +60,7 @@ namespace DiscoveryCore.consul
 				_logger.LogWarning("Thare was problem creating consul client.");
 
 			_protocol = _config.Get<string>("kumuluzee.discovery.consul.protocol");
-			if (string.IsNullOrEmpty(_protocol))
+			if (string.IsNullOrWhiteSpace(_protocol))
 				_protocol = "http";
 		}
 
@@ -150,9 +143,7 @@ namespace DiscoveryCore.consul
 		private async Task<ExecutionStatus> Register()
 		{
 			if (_consulServiceInstance.IsSingleton && await IsServiceRegistred())
-			{
-				return ExecutionStatus.Bad();
-			}
+				return ExecutionStatus.Bad();		
 
 			var agent = new AgentServiceRegistration()
 			{
@@ -173,9 +164,8 @@ namespace DiscoveryCore.consul
 			var result = await _client.Agent.ServiceRegister(agent);
 
 			if (result.StatusCode != HttpStatusCode.OK)
-			{
 				return ExecutionStatus.Bad();
-			}
+
 			return ExecutionStatus.Good();
 		}
 		private async Task<bool> IsServiceRegistred()
@@ -212,8 +202,6 @@ namespace DiscoveryCore.consul
 			{
 				var watchNamespace = $"/environments/{options.Environment}/services/{options.ServiceName}/{discovery.Version}";
 
-				Config config = new Config(_configOptions);
-
 				if(_gatewayURLs.Where(e => e.Id == watchNamespace).Any() == false)
 				{
 					_logger.LogInformation($"Creating a watch for {watchNamespace}");
@@ -223,10 +211,10 @@ namespace DiscoveryCore.consul
 					_gatewayURLs.Add(new GatewayURLWatch()
 					{
 						Id = watchNamespace,
-						URL = config.Get<string>(key)
+						URL = _config.Get<string>(key)
 					});
 
-					config.Subscribe(key, (string val) =>
+					_config.Subscribe(key, (string val) =>
 					{
 						foreach(var gatewayURL in _gatewayURLs)
 						{

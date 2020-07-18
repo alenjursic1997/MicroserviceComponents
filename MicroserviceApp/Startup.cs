@@ -33,13 +33,13 @@ namespace MicroserviceApp
 				options.RegisterHealthCheck("as", new DiskSpaceHealthCheck(500, SpaceUnit.Gigabyte));
 			});
 
-			//services.AddKumuluzDiscovery(opt=>
-			//{
-			//	opt.SetConfigFilePath(Path.GetFullPath("config.yaml"));
-			//	opt.SetExtensions("etcd");
-			//});
-			//DiscoveryProvider.GetDiscovery().RegisterService();
-		}
+            services.AddKumuluzDiscovery(opt =>
+            {
+                opt.SetConfigFilePath(Path.GetFullPath("config.yaml"));
+                opt.SetExtensions("etcd");
+            });
+            DiscoveryProvider.GetDiscovery().RegisterService();
+        }
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
