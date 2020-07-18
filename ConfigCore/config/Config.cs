@@ -35,13 +35,9 @@ namespace ConfigCore.config
 			//create and add new file configuration
 			FileConfig fileConfig = new FileConfig(_logger, options.ConfigFilePath);
 			if (fileConfig != null)
-			{
 				_configSources.Add(fileConfig);
-			}
 			else
-			{
 				_logger.LogInformation("Default path 'config.yaml' is used for configuration file.");
-			}
 
 			//sort current list of config sources by their priority;
 			SortConfigSources();
@@ -49,6 +45,7 @@ namespace ConfigCore.config
 			//add extension config sources
 			if (options.Extensions == null || string.IsNullOrWhiteSpace(options.Extensions))
 				return;
+
 			var configExtensions = options.Extensions.Split(',');
 			foreach (string extension in configExtensions)
 			{

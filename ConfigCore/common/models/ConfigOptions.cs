@@ -7,11 +7,10 @@ namespace ConfigCore.common.models
 {
 	public class ConfigOptions
 	{
-		public string ConfigFilePath { get; private set; }
-		public string Extensions { get; private set; }
-		public string ExtensionNamespace { get; private set; }
-		public int LogLevel { get; private set; }
-		public ILogger Logger { get; set; }
+		internal string ConfigFilePath { get; private set; }
+		internal string Extensions { get; private set; }
+		internal int LogLevel { get; private set; }
+		internal ILogger Logger { get; set; }
 
 
 		public void SetConfigFilePath(string path)
@@ -22,11 +21,6 @@ namespace ConfigCore.common.models
 		public void SetExtension(string extensions)
 		{
 			Extensions = extensions;
-		}
-
-		public void SetExtensionNamespace(string extensionNamespace)
-		{
-			ExtensionNamespace = extensionNamespace;
 		}
 
 		public void SetLogLevel(int logLevel)

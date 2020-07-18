@@ -17,22 +17,23 @@ namespace ConfigCore.consul
 		private const int PRIORITY = 100;
 		private const string ADDRESS = "http://localhost:8500";
 
-		public IConsulClient client;
-		public int startRetryDelay;
-		public int maxRetryDelay;
-		public string nametag;
 		public readonly ILogger _logger;
 		public readonly IConfig _config;
 		public readonly IConverter _converter;
 
-		public ConsulConfig(IConfig conf, ILogger logger, IConverter converter)
+		public IConsulClient client;
+		public int startRetryDelay;
+		public int maxRetryDelay;
+		public string nametag;
+
+		public ConsulConfig(IConfig config, ILogger logger, IConverter converter)
 		{
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
-			_config = conf ?? throw new ArgumentNullException(nameof(conf));
+			_config = config ?? throw new ArgumentNullException(nameof(config));
 			_converter = converter ?? throw new ArgumentNullException(nameof(converter));
 
 			//getting source address
-			string sourceAddress = conf.Get<string>("kumuluzee.config.consul.hosts");
+			string sourceAddress = _config.Get<string>("kumuluzee.config.consul.hosts");
 			if (!string.IsNullOrWhiteSpace(sourceAddress))
 			{
 				sourceAddress = ADDRESS;
@@ -53,12 +54,13 @@ namespace ConfigCore.consul
 			}
 
 			//get service configuration values from configuration sources
-			ServiceConfigurationValues scv = Common.LoadServiceConfiguration(conf);
+			ServiceConfigurationValues scv = Common.LoadServiceConfiguration(_config);
 			startRetryDelay = scv.startRetryDelay;
 			maxRetryDelay = scv.maxRetryDelay;
 			nametag = "environments/" + scv.envName + "/services/" + scv.name + "/" + scv.version + "/config";
 
-			var resultNametag = conf.Get<string>("kumuluzee.config.namespace");
+
+			var resultNametag = _config.Get<string>("kumuluzee.config.namespace");
 			if (resultNametag != null)
 				nametag = resultNametag;
 
@@ -144,7 +146,6 @@ namespace ConfigCore.consul
 			}
 
 			Watch(key, callback, oldValue, retryDelay: startRetryDelay);
-
 			return;
 		}
 

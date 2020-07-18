@@ -1,17 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Company>Trac d.o.o.</Company>
+		<Authors>Alen Juršič</Authors>
+		<Description>ConfigCoreis used for configuring .NET Core service.</Description>
+		<PackageTags>.NET Core, Configuration, Config, Microservice, API</PackageTags>
+		<NeutralLanguage>English</NeutralLanguage>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Consul" Version="0.7.2.6" />
-    <PackageReference Include="dotnet-etcd" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Nancy" Version="2.0.0" />
-    <PackageReference Include="System.Text.Encodings.Web" Version="4.6.0" />
-    <PackageReference Include="YamlDotNet" Version="7.0.0" />
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<NuGetPublishLocation>C:\Users\ajursic\Desktop\test</NuGetPublishLocation>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<NuGetPublishType>remote</NuGetPublishType>
+		<NuGetPublishLocation>http://tracbb/v3/index.json</NuGetPublishLocation>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Consul" Version="0.7.2.6" />
+		<PackageReference Include="dotnet-etcd" Version="3.0.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
+		<PackageReference Include="Nancy" Version="2.0.0" />
+		<PackageReference Include="SS.NuGet.Publish" Version="1.0.1912.22">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="System.Text.Encodings.Web" Version="4.6.0" />
+		<PackageReference Include="YamlDotNet" Version="7.0.0" />
+	</ItemGroup>
 
 </Project>

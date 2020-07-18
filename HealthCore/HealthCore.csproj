@@ -13,10 +13,10 @@
     <Product>HealthCore</Product>
     <PackageId>HealthCore</PackageId>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <Version>1.0.10</Version>
+    <Version>1.0.11</Version>
 	<PackageIconUrl>https://cdn.dribbble.com/users/3306562/screenshots/6305250/aj-03.png</PackageIconUrl>
-	<AssemblyVersion>1.0.10.0</AssemblyVersion>
-	<FileVersion>1.0.10.0</FileVersion>
+	<AssemblyVersion>1.0.11.0</AssemblyVersion>
+	<FileVersion>1.0.11.0</FileVersion>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -9,6 +9,7 @@ using DiscoveryCore.discovery;
 using DiscoveryCore.common.models;
 using System.IO;
 using HealthCore.Checks;
+using ConfigCore.extensions;
 
 namespace MicroserviceApp
 {

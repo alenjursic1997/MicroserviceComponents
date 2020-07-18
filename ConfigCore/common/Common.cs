@@ -16,7 +16,7 @@ namespace ConfigCore.common
 
 			toReturn.envName = conf.Get<string>("kumuluzee.env.name");
 			toReturn.name = conf.Get<string>("kumuluzee.name");
-			toReturn.version = conf.Get<string>("kumulutee.version");
+			toReturn.version = conf.Get<string>("kumuluzee.version");
 			toReturn.startRetryDelay = conf.Get<int>("kumuluzee.config.start-retry-delay-ms");
 			toReturn.maxRetryDelay = conf.Get<int>("kumuluzee.config.max-retry-delay-ms");
 

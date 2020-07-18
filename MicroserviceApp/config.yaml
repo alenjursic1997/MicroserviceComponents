@@ -12,6 +12,8 @@
     name: dev
   config:
     namespace: ''
+    start-retry-delay-ms: 0
+    max-retry-delay-ms: 0
     etcd:
       hosts: http://localhost:2379
     consul:
