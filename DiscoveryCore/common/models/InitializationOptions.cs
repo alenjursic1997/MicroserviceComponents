@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using ConfigCore.common.models;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,16 +8,21 @@ namespace DiscoveryCore.common.models
 {
 	public class InitializationOptions
 	{
-		internal string Extension { get; private set; }
+		internal Extension Extension { get; private set; }
 
 		internal string ConfigFilePath { get; private set; }
 
 		internal ILogger Logger { get; private set; }
 
 
-		public void SetExtensions(string extension)
+		public void SetExtension(DiscoveryExtension extension)
 		{
-			Extension = extension;
+			switch(extension)
+            {
+				case DiscoveryExtension.Consul:
+					Extension = Extension.Consul;
+					break;
+            }
 		}
 
 		public void SetConfigFilePath(string filePath)
@@ -29,5 +35,10 @@ namespace DiscoveryCore.common.models
 			Logger = logger;
 		}
 	}
+
+	public enum DiscoveryExtension
+    {
+		Consul
+    }
 }
 

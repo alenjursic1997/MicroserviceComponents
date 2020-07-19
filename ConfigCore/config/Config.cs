@@ -42,21 +42,16 @@ namespace ConfigCore.config
 			//sort current list of config sources by their priority;
 			SortConfigSources();
 
-			//add extension config sources
-			if (options.Extensions == null || string.IsNullOrWhiteSpace(options.Extensions))
-				return;
-
-			var configExtensions = options.Extensions.Split(',');
-			foreach (string extension in configExtensions)
+			foreach (var extension in options.Extensions)
 			{
-				switch (extension.ToLower())
+				switch (extension)
 				{
-					case "consul":
+					case Extension.Consul:
 						//create and add new consul configuration
 						ConsulConfig consulConfig = new ConsulConfig(this, _logger, _converter);
 						_configSources.Add(consulConfig);
 						break;
-					case "etcd":
+					case Extension.Etcd:
 						//create and add new etcd configuration
 						EtcdConfig etcdConfig = new EtcdConfig(this, _logger, _converter);
 						_configSources.Add(etcdConfig);

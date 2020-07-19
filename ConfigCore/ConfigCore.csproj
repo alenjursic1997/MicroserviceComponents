@@ -9,7 +9,7 @@
 		<Description>ConfigCoreis used for configuring .NET Core service.</Description>
 		<PackageTags>.NET Core, Configuration, Config, Microservice, API</PackageTags>
 		<NeutralLanguage>English</NeutralLanguage>
-		<Version>1.0.1</Version>
+		<Version>1.0.2</Version>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

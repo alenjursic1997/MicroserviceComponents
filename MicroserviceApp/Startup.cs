@@ -10,6 +10,7 @@ using DiscoveryCore.common.models;
 using System.IO;
 using HealthCore.Checks;
 using ConfigCore.extensions;
+using ConfigCore.common.models;
 
 namespace MicroserviceApp
 {
@@ -33,10 +34,17 @@ namespace MicroserviceApp
 				options.RegisterHealthCheck("as", new DiskSpaceHealthCheck(500, SpaceUnit.Gigabyte));
 			});
 
-            services.AddKumuluzDiscovery(opt =>
+			services.AddKumuluzConfig(options =>
+			{
+				options.SetConfigFilePath(Path.GetFullPath("config.yaml"));
+				options.SetExtensions(Extension.Consul, Extension.Etcd);
+			});
+
+
+			services.AddKumuluzDiscovery(opt =>
             {
                 opt.SetConfigFilePath(Path.GetFullPath("config.yaml"));
-                opt.SetExtensions("etcd");
+                opt.SetExtension(DiscoveryExtension.Consul);
             });
             DiscoveryProvider.GetDiscovery().RegisterService();
         }

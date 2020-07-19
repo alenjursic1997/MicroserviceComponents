@@ -161,7 +161,14 @@ namespace DiscoveryCore.consul
 				}
 			};
 
-			var result = await _client.Agent.ServiceRegister(agent);
+			try
+			{
+				var result = await _client.Agent.ServiceRegister(agent);
+			}
+            catch
+            {
+				return ExecutionStatus.Bad();
+			}
 
 			if (result.StatusCode != HttpStatusCode.OK)
 				return ExecutionStatus.Bad();

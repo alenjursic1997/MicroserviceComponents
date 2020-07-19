@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Text;
 using DiscoveryCore.common.interfaces;
 using DiscoveryCore.consul;
-using DiscoveryCore.etcd;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Threading.Tasks;
@@ -26,14 +25,14 @@ namespace DiscoveryCore.discovery
 
 			_configOptions = new ConfigOptions();
 			_configOptions.SetConfigFilePath(options.ConfigFilePath);
-			_configOptions.SetExtension(options.Extension);
+			_configOptions.SetExtensions(options.Extension);
 			_configOptions.SetLogger(_logger);
 
-			switch(options.Extension.ToLower())
+			switch(options.Extension)
 			{
-				case "consul": _discoverySource = new ConsulDiscovery(_configOptions, _logger);
+				case Extension.Consul: _discoverySource = new ConsulDiscovery(_configOptions, _logger);
 					break;
-				//case "etcd": _discoverySource = new EtcdDiscovery(_configOptions, _logger);
+				//case Extension.Etcd: _discoverySource = new EtcdDiscovery(_configOptions, _logger);
 				//	break;
 				default:
 					break;
