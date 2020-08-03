@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace ConfigCore.common.converters
@@ -69,10 +70,16 @@ namespace ConfigCore.common.converters
 			//if there is no useful converter, then use Convert.ChangeType method
 			try
 			{
+				if (Nullable.GetUnderlyingType(typeof(T)) != null)
+				{
+					TypeConverter conv = TypeDescriptor.GetConverter(Nullable.GetUnderlyingType(typeof(T)));
+					return (T)conv.ConvertFrom(value);
+				}
+
 				FormatValueDependOnType(ref value, typeof(T));
 				return (T)Convert.ChangeType(value, typeof(T));
 			}
-			catch 
+			catch(Exception e) 
 			{
 				//id value convertion has failed, return default value of type T
 				return default(T);

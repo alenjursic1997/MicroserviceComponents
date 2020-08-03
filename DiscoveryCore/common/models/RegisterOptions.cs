@@ -12,10 +12,5 @@ namespace DiscoveryCore.common.models
 		public string Environment { get; set; }
 		public string Version { get; set; }
 		public bool Singleton { get; set; }
-
-		public RegisterOptions()
-		{
-
-		}
 	}
 }

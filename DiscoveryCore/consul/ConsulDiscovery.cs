@@ -64,7 +64,7 @@ namespace DiscoveryCore.consul
 				_protocol = "http";
 		}
 
-		public string RegisterService(RegisterOptions options)
+		public string RegisterService(RegisterOptions options) //CHECKED
 		{
 			if (_consulServiceInstance != null)
 				return "Service is already registered";
@@ -77,7 +77,7 @@ namespace DiscoveryCore.consul
 
 			return _consulServiceInstance.Id.ToString();
 		}
-		private async void Run(int retryDelayMs)
+		private async void Run(int retryDelayMs) //CHECKED
 		{
 			if (!_canRun)
 				return;
@@ -85,12 +85,14 @@ namespace DiscoveryCore.consul
 			ExecutionStatus status;
 			bool firstRunStatus = false;
 
+			//if service is already registered
 			if (_consulServiceInstance.IsRegistered)
 			{
 				status = await TTLUpdate();
 				if(!status.Successful)
 					_consulServiceInstance.IsRegistered = false;
 			}
+			//if service is not registered yet
 			else
 			{
 				status = await Register();
@@ -110,23 +112,19 @@ namespace DiscoveryCore.consul
 			else
 			{
 				await Task.Delay(retryDelayMs);
-				if (retryDelayMs * 2 > _maxRetryDelay)
-					Run(_maxRetryDelay);
-				else
-					Run(retryDelayMs * 2);
+				Run(Math.Min(retryDelayMs * 2, _maxRetryDelay));
 			}
 		}
-		private async Task<ExecutionStatus> TTLUpdate()
+		private async Task<ExecutionStatus> SendHeartbeat() //CHECKED
 		{
-			WriteResult result = null;
+			WriteResult result;
 			try
 			{
-				if(_canRun)
-					result = await _client.Agent.UpdateTTL(
-									$"service:{_consulServiceInstance.Id.ToString()}",
-									$"serviceid={_consulServiceInstance.Id} time={DateTime.Now}",
-									TTLStatus.Pass
-								);
+				result = await _client.Agent.UpdateTTL(
+								$"service:{_consulServiceInstance.Id}",
+								$"serviceid={_consulServiceInstance.Id} time={DateTime.Now}",
+								TTLStatus.Pass
+							);
 			}
 			catch
 			{
@@ -140,9 +138,9 @@ namespace DiscoveryCore.consul
 
 			return ExecutionStatus.Good();
 		}
-		private async Task<ExecutionStatus> Register()
+		private async Task<ExecutionStatus> Register() //CHECKED
 		{
-			if (_consulServiceInstance.IsSingleton && await IsServiceRegistred())
+			if (_consulServiceInstance.IsSingleton && await IsServiceRegistered())
 				return ExecutionStatus.Bad();		
 
 			var agent = new AgentServiceRegistration()
@@ -164,26 +162,33 @@ namespace DiscoveryCore.consul
 			try
 			{
 				var result = await _client.Agent.ServiceRegister(agent);
+				if (result.StatusCode != HttpStatusCode.OK)
+					return ExecutionStatus.Bad();
+				return ExecutionStatus.Good();
 			}
             catch
             {
+				//TODO: Logging
 				return ExecutionStatus.Bad();
 			}
-
-			if (result.StatusCode != HttpStatusCode.OK)
-				return ExecutionStatus.Bad();
-
-			return ExecutionStatus.Good();
 		}
-		private async Task<bool> IsServiceRegistred()
+		private async Task<bool> IsServiceRegistered() //CHECKED
 		{
-			var res = await _client.Health.Service(_consulServiceInstance.Id.ToString(), "", true);
-			if (res == null || res.StatusCode != System.Net.HttpStatusCode.OK)
+			try
 			{
-				//Logging
-				return false;
+				var res = await _client.Health.Service(_consulServiceInstance.Id.ToString(), "", true);
+				if (res == null || res.StatusCode != HttpStatusCode.OK)
+				{
+					//TODO: Logging
+					return false;
+				}
+				return true;
 			}
-			return true;
+            catch
+            {
+				//TODO: Logging
+				return false;
+            }
 		}
 
 		public async Task<string> DiscoverService(DiscoverOptions options)
@@ -268,7 +273,12 @@ namespace DiscoveryCore.consul
 
 			return status;
 		}
-	}
+
+        public Task<List<string>> DiscoverServices(DiscoverOptions options)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
 	internal class ConsulServiceInstance
 	{

@@ -34,6 +34,7 @@ namespace DiscoveryCore.common
 			registerConfig.EnvName = config?.Get<string>("kumuluzee.env.name");
 			if (string.IsNullOrWhiteSpace(registerConfig.EnvName))
 				registerConfig.EnvName = "dev";
+
 			registerConfig.Discovery.PingInterval = config?.Get<int?>("kumuluzee.discovery.ping-interval") ?? 20;
 			registerConfig.Discovery.TTL = config?.Get<int?>("kumuluzee.discovery.ttl") ?? 30;
 			registerConfig.Server.Address = config?.Get<string>("kumuluzee.server.http.address");

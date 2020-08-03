@@ -28,17 +28,17 @@ namespace MicroserviceApp
 		{
 			services.AddControllers();
 
-			services.AddKumuluzHealth(options =>
-			{
-				options.RegisterHealthCheck("http_health_check", new HttpHealthCheck("https://github.com/"));
-				options.RegisterHealthCheck("as", new DiskSpaceHealthCheck(500, SpaceUnit.Gigabyte));
-			});
+			//services.AddKumuluzHealth(options =>
+			//{
+			//	options.RegisterHealthCheck("http_health_check", new HttpHealthCheck("https://github.com/"));
+			//	options.RegisterHealthCheck("as", new DiskSpaceHealthCheck(500, SpaceUnit.Gigabyte));
+			//});
 
-			services.AddKumuluzConfig(options =>
-			{
-				options.SetConfigFilePath(Path.GetFullPath("config.yaml"));
-				options.SetExtensions(Extension.Consul, Extension.Etcd);
-			});
+			//services.AddKumuluzConfig(options =>
+			//{
+			//	options.SetConfigFilePath(Path.GetFullPath("config.yaml"));
+			//	options.SetExtensions(Extension.Consul, Extension.Etcd);
+			//});
 
 
 			services.AddKumuluzDiscovery(opt =>
@@ -64,7 +64,7 @@ namespace MicroserviceApp
 				endpoints.MapControllers();
 			});
 
-			app.UseKumuluzHealth("health");
+			//app.UseKumuluzHealth("health");
 		}
 	}
 }

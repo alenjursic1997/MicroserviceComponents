@@ -12,6 +12,8 @@ namespace DiscoveryCore.common.interfaces
 
 		Task<string> DiscoverService(DiscoverOptions options);
 
+		Task<List<string>> DiscoverServices(DiscoverOptions options);
+
 		Task<ExecutionStatus> UnregisterService();
 	}
 }

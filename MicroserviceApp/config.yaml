@@ -1,7 +1,7 @@
 ﻿kumuluzee:
   # name of our service
   name: test-service
-  version: 1.0.0
+  version: 1.0.2
   server:
     # url where our service will live
     base-url: http://localhost:5000
@@ -9,18 +9,18 @@
       port: 5000
       address: http://localhost
   env: 
-    name: dev
+    name: devF
   config:
     namespace: ''
-    start-retry-delay-ms: 0
-    max-retry-delay-ms: 0
+    start-retry-delay-ms: 100
+    max-retry-delay-ms: 500
     etcd:
       hosts: http://localhost:2379
     consul:
       hosts: http://localhost:8500
   discovery:
-    ttl: 100
-    ping-interval: 20
+    ttl: 5000
+    ping-interval: 2000
     consul:
       hosts: http://localhost:8500
     etcd:

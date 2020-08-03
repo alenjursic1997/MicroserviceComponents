@@ -41,9 +41,7 @@ namespace DiscoveryCore.discovery
 
 		public string RegisterService(RegisterOptions options)
 		{
-			_discoverySource.RegisterService(options);
-
-			return "ServiceID";
+			return _discoverySource.RegisterService(options);
 		}
 
 		public string RegisterService()
