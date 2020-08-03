@@ -11,6 +11,9 @@ namespace DiscoveryCore.common.models
 		public string EnvName { get; set; }
 		public string Version { get; set; }
 		public DiscoveryParams Discovery { get; set; }
+		public string Protocol { get; set; }
+		public int CriticalServiceUnregisterTime { get; set; }
+		public bool Singleton { get; set; }
 
 		public RegisterConfiguration()
 		{

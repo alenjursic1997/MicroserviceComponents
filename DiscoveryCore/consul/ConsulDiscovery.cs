@@ -5,6 +5,7 @@ using DiscoveryCore.common;
 using DiscoveryCore.common.interfaces;
 using DiscoveryCore.common.models;
 using Microsoft.Extensions.Logging;
+using Nancy.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,12 +22,10 @@ namespace DiscoveryCore.consul
 		private readonly ILogger _logger;
 
 		private ConsulClient _client;
-		private RegisterConfiguration _regConfig;
 		private ConsulServiceInstance _consulServiceInstance;
 
 		public int _startRetryDelay;
 		public int _maxRetryDelay;
-		public string _protocol;
 		public bool _canRun;
 		public string _lastKnownService;
 		public List<GatewayURLWatch> _gatewayURLs;
@@ -58,104 +57,84 @@ namespace DiscoveryCore.consul
 
 			if (_client == null)
 				_logger.LogWarning("Thare was problem creating consul client.");
-
-			_protocol = _config.Get<string>("kumuluzee.discovery.consul.protocol");
-			if (string.IsNullOrWhiteSpace(_protocol))
-				_protocol = "http";
 		}
 
-		public string RegisterService(RegisterOptions options) //CHECKED
+
+		public string RegisterService(RegisterOptions options)
 		{
 			if (_consulServiceInstance != null)
 				return "Service is already registered";
 
-			_regConfig = Common.GetServiceRegisterConfiguration(_config, options);
-			_consulServiceInstance = new ConsulServiceInstance(_regConfig, isSingleton: options.Singleton);
+			var regConfig = Common.GetServiceRegisterConfiguration(_config, options);
+			_consulServiceInstance = new ConsulServiceInstance(regConfig);
 
 			_canRun = true;
-			Run(_startRetryDelay);
+			Run(regConfig.Discovery.PingInterval * 1000);
 
-			return _consulServiceInstance.Id.ToString();
+			return _consulServiceInstance.Id;
 		}
-		private async void Run(int retryDelayMs) //CHECKED
+		private async void Run(int pingIntervalMs)
 		{
 			if (!_canRun)
 				return;
 
-			ExecutionStatus status;
-			bool firstRunStatus = false;
-
 			//if service is already registered
 			if (_consulServiceInstance.IsRegistered)
-			{
-				status = await TTLUpdate();
-				if(!status.Successful)
-					_consulServiceInstance.IsRegistered = false;
-			}
-			//if service is not registered yet
+				await SendHeartbeat();
 			else
-			{
-				status = await Register();
-				if (status.Successful)
-				{
-					firstRunStatus = true;
-					_consulServiceInstance.IsRegistered = true;
-				}
-			}
+				await Register(_startRetryDelay);
 
-			if (status.Successful)
-			{
-				if (!firstRunStatus)
-					await Task.Delay(_regConfig.Discovery.PingInterval);
-				Run(_startRetryDelay);
-			}
-			else
-			{
-				await Task.Delay(retryDelayMs);
-				Run(Math.Min(retryDelayMs * 2, _maxRetryDelay));
-			}
+			await Task.Delay(pingIntervalMs);
+			Run(pingIntervalMs);
 		}
-		private async Task<ExecutionStatus> SendHeartbeat() //CHECKED
+		private async Task SendHeartbeat()
 		{
-			WriteResult result;
 			try
 			{
-				result = await _client.Agent.UpdateTTL(
+				var result = await _client.Agent.UpdateTTL(
 								$"service:{_consulServiceInstance.Id}",
 								$"serviceid={_consulServiceInstance.Id} time={DateTime.Now}",
 								TTLStatus.Pass
 							);
+
+				if (result == null || result.StatusCode != HttpStatusCode.OK)
+					throw new Exception();
 			}
 			catch
 			{
-				return ExecutionStatus.Bad();
+				//TODO: Logging
+				_consulServiceInstance.IsRegistered = false;
+				await Register(_startRetryDelay);
 			}
 
-			if (result == null || result.StatusCode != HttpStatusCode.OK)
-			{
-				return ExecutionStatus.Bad();
-			}
-
-			return ExecutionStatus.Good();
 		}
-		private async Task<ExecutionStatus> Register() //CHECKED
+		private async Task Register(int retryDelayMs)
 		{
 			if (_consulServiceInstance.IsSingleton && await IsServiceRegistered())
-				return ExecutionStatus.Bad();		
+            {
+				_logger.LogInformation("Service is already registred.");
+				return;
+            }
+
+			if (_client?.Agent == null)
+			{
+				_logger.LogWarning("Consul not initialized.");
+				return;
+			}
 
 			var agent = new AgentServiceRegistration()
 			{
-				ID = _consulServiceInstance.Id.ToString(),
-				Name = _consulServiceInstance.Name,
-				Port = _regConfig.Server.Port,
-				Tags = new string[] { _protocol, _consulServiceInstance.VersionTag },
-				Address = string.IsNullOrWhiteSpace(_regConfig.Server.Address) ? null : _regConfig.Server.Address,
+				ID = _consulServiceInstance.Id,
+				Name = _consulServiceInstance.ServiceName,
+				Port = _consulServiceInstance.Port,
+				Tags = new string[] { _consulServiceInstance.Protocol, _consulServiceInstance.VersionTag },
+				Address = _consulServiceInstance.Address,
 				Check = new AgentCheckRegistration()
 				{
-					TTL = TimeSpan.FromMilliseconds(_regConfig.Discovery.TTL),
-					DeregisterCriticalServiceAfter = TimeSpan.FromSeconds(10),
+					TTL = TimeSpan.FromSeconds(_consulServiceInstance.TTL),
+					DeregisterCriticalServiceAfter = TimeSpan.FromSeconds(_consulServiceInstance.CriticalServiceUnregisterTime),
 					Status = HealthStatus.Passing,
-					ServiceID = _consulServiceInstance.Id.ToString(),
+					ServiceID = _consulServiceInstance.Id,
 				}
 			};
 
@@ -163,41 +142,51 @@ namespace DiscoveryCore.consul
 			{
 				var result = await _client.Agent.ServiceRegister(agent);
 				if (result.StatusCode != HttpStatusCode.OK)
-					return ExecutionStatus.Bad();
-				return ExecutionStatus.Good();
+					throw new Exception();
+
+				_consulServiceInstance.IsRegistered = true;
+				await SendHeartbeat();
 			}
             catch
             {
 				//TODO: Logging
-				return ExecutionStatus.Bad();
+				await Register(Math.Min(retryDelayMs * 2, _maxRetryDelay));
 			}
 		}
-		private async Task<bool> IsServiceRegistered() //CHECKED
+		private async Task<bool> IsServiceRegistered()
 		{
 			try
 			{
-				var res = await _client.Health.Service(_consulServiceInstance.Id.ToString(), "", true);
-				if (res == null || res.StatusCode != HttpStatusCode.OK)
-				{
-					//TODO: Logging
-					return false;
-				}
-				return true;
+				var res = await _client.Health.Service(
+					_consulServiceInstance.ServiceName, 
+					$"serviceid={_consulServiceInstance.Id} time={DateTime.Now}", true);
+				if (res == null || res.Response == null || res.StatusCode != HttpStatusCode.OK)
+					throw new Exception();
+
+				foreach(var serviceEntry in res.Response)
+                {
+					var discoveredService = new DiscoveredService(serviceEntry);
+					if (discoveredService != null
+						&& discoveredService.Version.ToString() == _consulServiceInstance.Version)
+						return true;
+                }
+
+				return false;
 			}
             catch
             {
-				//TODO: Logging
+				_logger.LogWarning("There was a problem accessing Consul.");
 				return false;
             }
 		}
+
 
 		public async Task<string> DiscoverService(DiscoverOptions options)
 		{
 			options.CompleteDiscoverOptions();
 
-			var searchServiceName = $"{options.Environment}-{options.ServiceName}"; 
-			var res = await _client.Health.Service(searchServiceName, "", true);
-			if(res.StatusCode != HttpStatusCode.OK)
+			var res = await _client.Health.Service(options.SearchServiceKey, "", true);
+			if(res == null || res.StatusCode != HttpStatusCode.OK)
 			{
 				if (!string.IsNullOrWhiteSpace(_lastKnownService))
 				{
@@ -245,6 +234,11 @@ namespace DiscoveryCore.consul
 			_lastKnownService = service;
 			return service;
 		}
+        public Task<List<string>> DiscoverServices(DiscoverOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
 
 		public async Task<ExecutionStatus> UnregisterService()
 		{
@@ -258,42 +252,30 @@ namespace DiscoveryCore.consul
 			}
 			_canRun = false;
 
-			var result = await _client.Agent.ServiceDeregister(_consulServiceInstance.Id.ToString());
+			try
+			{
+				var result = await _client.Agent.ServiceDeregister(_consulServiceInstance?.Id);
+				if (result.StatusCode == HttpStatusCode.OK)
+				{
+					status = ExecutionStatus.Good();
+					status.Message = $"Service with id {_consulServiceInstance.Id} was successfully unregistred.";
+				}
+				else
+				{
+					status = ExecutionStatus.Bad();
+					status.Message = $"There were some problems unregistering service with id {_consulServiceInstance.Id}.";
+				}
 
-			if(result.StatusCode == HttpStatusCode.OK)
-			{
-				status = ExecutionStatus.Good();
-				status.Message = $"Service with id {_consulServiceInstance.Id.ToString()} was successfully unregistred.";
 			}
-			else
-			{
+			catch
+            {
 				status = ExecutionStatus.Bad();
-				status.Message = $"There were some problems unregistering service with id {_consulServiceInstance.Id.ToString()}.";
-			}
+				status.Message = $"There were some problems unregistering service.";
+            }
 
 			return status;
 		}
 
-        public Task<List<string>> DiscoverServices(DiscoverOptions options)
-        {
-            throw new NotImplementedException();
-        }
+
     }
-
-	internal class ConsulServiceInstance
-	{
-		public Guid Id { get; set; }
-		public string Name { get; set; }
-		public string VersionTag { get; set; }
-		public bool IsSingleton { get; set; }
-		public bool IsRegistered { get; set; }
-
-		public ConsulServiceInstance(RegisterConfiguration regConfig, bool isSingleton = true)
-		{
-			Id = Guid.NewGuid();
-			Name = $"{regConfig.EnvName}-{regConfig.Name}";
-			VersionTag = $"version={regConfig.Version}";
-			IsSingleton = isSingleton;
-		}
-	}
 }

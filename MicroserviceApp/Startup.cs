@@ -46,7 +46,7 @@ namespace MicroserviceApp
                 opt.SetConfigFilePath(Path.GetFullPath("config.yaml"));
                 opt.SetExtension(DiscoveryExtension.Consul);
             });
-            DiscoveryProvider.GetDiscovery().RegisterService();
+            DiscoveryProvider.GetDiscovery().RegisterService(new RegisterOptions() { Singleton = true });
         }
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -19,10 +19,11 @@
     consul:
       hosts: http://localhost:8500
   discovery:
-    ttl: 5000
-    ping-interval: 2000
+    ttl: 30
+    ping-interval: 20
     consul:
       hosts: http://localhost:8500
+      deregister-critical-service-after-s: 120
     etcd:
       hosts: http://localhost:2379
 settings:

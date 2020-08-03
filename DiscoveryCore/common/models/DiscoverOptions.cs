@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Consul;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -20,6 +21,8 @@ namespace DiscoveryCore.common.models
 					return "gateway";
 			}
 		}
+
+		public string SearchServiceKey { get { return $"{Environment}-{ServiceName}"; } }
 	}
 
 	public enum AccessType { 

@@ -34,13 +34,18 @@ namespace DiscoveryCore.common
 			registerConfig.EnvName = config?.Get<string>("kumuluzee.env.name");
 			if (string.IsNullOrWhiteSpace(registerConfig.EnvName))
 				registerConfig.EnvName = "dev";
+			registerConfig.Protocol = config?.Get<string>("kumuluzee.discovery.consul.protocol");
+			if (string.IsNullOrWhiteSpace(registerConfig.Protocol))
+				registerConfig.Protocol = "http";
 
+			registerConfig.Singleton = options.Singleton;
 			registerConfig.Discovery.PingInterval = config?.Get<int?>("kumuluzee.discovery.ping-interval") ?? 20;
 			registerConfig.Discovery.TTL = config?.Get<int?>("kumuluzee.discovery.ttl") ?? 30;
 			registerConfig.Server.Address = config?.Get<string>("kumuluzee.server.http.address");
 			registerConfig.Server.BaseUrl = config?.Get<string>("kumuluzee.server.base-url");
 			registerConfig.Server.Port = config?.Get<int?>("kumuluzee.server.http.port") ?? 5000;
 			registerConfig.Version = config?.Get<string>("kumuluzee.version") ?? "1.0.0";
+			registerConfig.CriticalServiceUnregisterTime = config?.Get<int?>("kumuluzee.discovery.consul.deregister-critical-service-after-s") ?? 60;
 
 			if (!string.IsNullOrWhiteSpace(options.ServiceName))
 				registerConfig.Name = options.ServiceName;

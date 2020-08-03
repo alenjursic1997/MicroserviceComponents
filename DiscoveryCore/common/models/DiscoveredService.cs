@@ -17,7 +17,7 @@ namespace DiscoveryCore.common.models
 
 		public DiscoveredService(ServiceEntry entry) 
 		{
-			if (entry == null)
+			if (entry?.Service == null)
 				return;
 
 			Id = entry.Service.ID;
