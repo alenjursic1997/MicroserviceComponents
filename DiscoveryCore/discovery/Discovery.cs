@@ -1,15 +1,9 @@
-﻿using ConfigCore.config;
-using ConfigCore.common.models;
-using DiscoveryCore.common;
-using DiscoveryCore.common.models;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using ConfigCore.common.models;
 using DiscoveryCore.common.interfaces;
+using DiscoveryCore.common.models;
 using DiscoveryCore.consul;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using System.Threading.Tasks;
 
 namespace DiscoveryCore.discovery
 {
