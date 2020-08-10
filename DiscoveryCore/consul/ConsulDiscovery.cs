@@ -27,8 +27,9 @@ namespace DiscoveryCore.consul
 		public int _startRetryDelay;
 		public int _maxRetryDelay;
 		public bool _canRun;
-		public string _lastKnownService;
-		public List<GatewayURLWatch> _gatewayURLs;
+		public List<GatewayURLWatch> _gatewayURLs = new List<GatewayURLWatch>();
+		public IDictionary<string, List<DiscoveredService>> _discoveredServices =
+			new Dictionary<string, List<DiscoveredService>>();
 
 		public ConsulDiscovery(ConfigOptions configOptions, ILogger logger)
 		{
@@ -56,14 +57,17 @@ namespace DiscoveryCore.consul
 			}
 
 			if (_client == null)
-				_logger.LogWarning("Thare was problem creating consul client.");
+				_logger.LogError("Thare was problem creating consul client.");
 		}
 
 
 		public string RegisterService(RegisterOptions options)
 		{
 			if (_consulServiceInstance != null)
-				return "Service is already registered";
+			{
+				_logger.LogInformation("Service is already registered.");
+				return _consulServiceInstance.Id;
+			}
 
 			var regConfig = Common.GetServiceRegisterConfiguration(_config, options);
 			_consulServiceInstance = new ConsulServiceInstance(regConfig);
@@ -102,7 +106,7 @@ namespace DiscoveryCore.consul
 			}
 			catch
 			{
-				//TODO: Logging
+				_logger.LogWarning("There was problem updating TTL of service.}");
 				_consulServiceInstance.IsRegistered = false;
 				await Register(_startRetryDelay);
 			}
@@ -149,7 +153,7 @@ namespace DiscoveryCore.consul
 			}
             catch
             {
-				//TODO: Logging
+				_logger.LogWarning("Registration of service has failed.");
 				await Register(Math.Min(retryDelayMs * 2, _maxRetryDelay));
 			}
 		}
@@ -185,19 +189,24 @@ namespace DiscoveryCore.consul
 		{
 			options.CompleteDiscoverOptions();
 
-			var res = await _client.Health.Service(options.SearchServiceKey, "", true);
-			if(res == null || res.StatusCode != HttpStatusCode.OK)
+			try
 			{
-				if (!string.IsNullOrWhiteSpace(_lastKnownService))
+				var res = await _client.Health.Service(options.SearchServiceKey, "", true);
+				if (res == null || res.StatusCode != HttpStatusCode.OK)
 				{
-					_logger.LogWarning("Unsuccessful service discovery. Last known service is used.");
-					return _lastKnownService;
+					throw new Exception();
 				}
-				_logger.LogError("Unsuvessful service discovery. An empty string is returned");
-				return "";
+
+				_discoveredServices[options.SearchServiceKey] =
+					res.Response.Select(e => new DiscoveredService(e)).Where(e => e.Version != null).ToList();
+			}
+            catch
+            {
+				_logger.LogError("Error retrieving healthy service instances from Consul.");
 			}
 
-			var allDiscoveries = res.Response.Select(e => new DiscoveredService(e)).Where(e => e.Version != null).ToList();
+			var allDiscoveries = _discoveredServices.ContainsKey(options.SearchServiceKey) ?
+				_discoveredServices[options.SearchServiceKey] : new List<DiscoveredService>();
 
 			foreach (var discovery in allDiscoveries) 
 			{
@@ -221,7 +230,6 @@ namespace DiscoveryCore.consul
 						{
 							if(gatewayURL.Id == watchNamespace)
 							{
-								//logging
 								gatewayURL.URL = val;
 							}
 						}
@@ -229,16 +237,9 @@ namespace DiscoveryCore.consul
 				}	
 			}
 
-			var service = Common.GetRandomServiceInstance(allDiscoveries, _gatewayURLs, options, _lastKnownService);
-			//TODO: check if there was any error getting random service
-			_lastKnownService = service;
-			return service;
+			var service = Common.GetRandomServiceInstance(allDiscoveries, _gatewayURLs, options);
+			return service ?? "";
 		}
-        public Task<List<string>> DiscoverServices(DiscoverOptions options)
-        {
-            throw new NotImplementedException();
-        }
-
 
 		public async Task<ExecutionStatus> UnregisterService()
 		{
@@ -275,7 +276,6 @@ namespace DiscoveryCore.consul
 
 			return status;
 		}
-
 
     }
 }

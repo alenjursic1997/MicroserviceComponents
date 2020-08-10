@@ -46,7 +46,43 @@ namespace MicroserviceApp
                 opt.SetConfigFilePath(Path.GetFullPath("config.yaml"));
                 opt.SetExtension(DiscoveryExtension.Consul);
             });
-            DiscoveryProvider.GetDiscovery().RegisterService(new RegisterOptions() { Singleton = true });
+			//DiscoveryProvider.GetDiscovery().RegisterService(new RegisterOptions() { Singleton = true });
+
+            var discoverOptions1 = new DiscoverOptions
+            {
+                ServiceName = "test-service",
+                Environment = "devf",
+                AccessType = AccessType.Direct,
+                Version = ">1.0.2"
+            };
+            var res1 = DiscoveryProvider.GetDiscovery().DiscoverService(discoverOptions1);
+
+            var discoverOptions2 = new DiscoverOptions
+            {
+                ServiceName = "test-service",
+                Environment = "devf",
+                AccessType = AccessType.Direct,
+                Version = "<=1.0.0"
+            };
+            var res2 = DiscoveryProvider.GetDiscovery().DiscoverService(discoverOptions2);
+
+            var discoverOptions3 = new DiscoverOptions
+            {
+                ServiceName = "test-service",
+                Environment = "devf",
+                AccessType = AccessType.Direct,
+                Version = "^2.0.2"
+            };
+            var res3 = DiscoveryProvider.GetDiscovery().DiscoverService(discoverOptions3);
+
+            var discoverOptions4 = new DiscoverOptions
+            {
+                ServiceName = "test-service",
+                Environment = "devf",
+                AccessType = AccessType.Direct,
+                Version = ">1.0.2"
+            };
+            var res4 = DiscoveryProvider.GetDiscovery().DiscoverService(discoverOptions4);
         }
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

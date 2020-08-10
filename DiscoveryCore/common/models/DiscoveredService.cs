@@ -13,8 +13,6 @@ namespace DiscoveryCore.common.models
 		public Version Version { get; set; }
 		public string Protocol { get; set; }
 
-		public DiscoveredService() { }
-
 		public DiscoveredService(ServiceEntry entry) 
 		{
 			if (entry?.Service == null)
@@ -36,8 +34,8 @@ namespace DiscoveryCore.common.models
 			}
 			if (Version == null) return;
 
-			var addr = entry.Service.Address ?? entry.Node.Address;
-			DirectURL = $"{Protocol}://{addr}:{entry.Service.Port}";
+			var addr = entry.Service.Address ?? $"{Protocol}://{entry.Node.Address}";
+			DirectURL = $"{addr}:{entry.Service.Port}";
 		} 
 	}
 }

@@ -26,8 +26,6 @@ namespace DiscoveryCore.discovery
 			{
 				case Extension.Consul: _discoverySource = new ConsulDiscovery(_configOptions, _logger);
 					break;
-				//case Extension.Etcd: _discoverySource = new EtcdDiscovery(_configOptions, _logger);
-				//	break;
 				default:
 					break;
 			}

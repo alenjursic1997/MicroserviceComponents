@@ -75,22 +75,20 @@ namespace DiscoveryCore.common
 		}
 
 		public static string GetRandomServiceInstance(List<DiscoveredService> discoveredServices,
-			List<GatewayURLWatch> gateways, DiscoverOptions options, string lastKnownService)
+			List<GatewayURLWatch> gateways, DiscoverOptions options)
 		{
 			Range desiredVersionRange;
 			try { desiredVersionRange = new Range(options.Version); }
 			catch { desiredVersionRange = null; }
 
 			if (desiredVersionRange == null)
-				return (string.IsNullOrEmpty(lastKnownService)) ? "" : lastKnownService;
+				return null;
 
 			var latestVersion = desiredVersionRange.MaxSatisfying(discoveredServices.Select(e => e.Version));
 			var validServices = discoveredServices.Where(e => e.Version == latestVersion).ToList();
 
-			if(validServices.Count == 0)
-			{
-				return (string.IsNullOrEmpty(lastKnownService)) ? "" : lastKnownService;
-			}
+			if (validServices.Count == 0)
+				return null;
 
 			var randomService = validServices[new Random().Next(validServices.Count)];
 			var watchNamespace = $"/environments/{options.Environment}/services/{options.ServiceName}/{randomService.Version.ToString()}";
@@ -101,7 +99,7 @@ namespace DiscoveryCore.common
 			else if (!string.IsNullOrEmpty(randomService.DirectURL))
 				return randomService.DirectURL;
 			else
-				return (string.IsNullOrEmpty(lastKnownService)) ? "" : lastKnownService;
+				return null;
 		}
 
 	}
