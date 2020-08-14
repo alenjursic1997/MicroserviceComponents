@@ -10,7 +10,6 @@ namespace ConfigCore.common.models
 	{
 		internal string ConfigFilePath { get; private set; }
 		internal Extension[] Extensions { get; private set; }
-		internal int LogLevel { get; private set; }
 		internal ILogger Logger { get; set; }
 
 
@@ -23,11 +22,6 @@ namespace ConfigCore.common.models
         {
 			Extensions = extensions;
         }
-
-		public void SetLogLevel(int logLevel)
-		{
-			LogLevel = logLevel;
-		}
 
 		public void SetLogger(ILogger logger)
 		{

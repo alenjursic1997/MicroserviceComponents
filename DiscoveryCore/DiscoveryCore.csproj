@@ -2,9 +2,15 @@
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
-		<Version>1.0.3</Version>
+		<Version>1.0.0</Version>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<Authors>Alen Juršič</Authors>
+		<Company>Trac d.o.o.</Company>
+		<Description>DiscoveryCore is used for discovering microservices.</Description>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageIcon>alen logo.png</PackageIcon>
+		<PackageTags>.NET Core, Discovery, Consul, Microservice, API</PackageTags>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -21,7 +27,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\ConfigCore\ConfigCore.csproj" />
+	  <None Include="C:\Users\ajursic\Downloads\alen logo.png">
+	    <Pack>True</Pack>
+	    <PackagePath></PackagePath>
+	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\ConfigCore\ConfigCore.csproj" />
 	</ItemGroup>
 
 </Project>

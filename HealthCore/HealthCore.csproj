@@ -14,9 +14,10 @@
     <PackageId>HealthCore</PackageId>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Version>1.0.0</Version>
-	<PackageIconUrl>https://cdn.dribbble.com/users/3306562/screenshots/6305250/aj-03.png</PackageIconUrl>
+	<PackageIconUrl></PackageIconUrl>
 	<AssemblyVersion>1.0.0.0</AssemblyVersion>
 	<FileVersion>1.0.0.0</FileVersion>
+	<PackageIcon>alen logo.png</PackageIcon>
   </PropertyGroup>
   
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -34,6 +35,13 @@
     </PackageReference>
     <PackageReference Include="StackExchange.Redis" Version="2.0.601" />
     <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\Users\ajursic\Downloads\alen logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 	
 </Project>
