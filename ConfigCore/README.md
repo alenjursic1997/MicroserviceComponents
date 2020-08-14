@@ -24,7 +24,7 @@ Currently, only API v2 is supported. Future releases will support API v3 in a fo
 You can include this functionality by installing nuget package as followed:
 
 ```cmd
-Find-Package -Name NuGet.Core -Source MyNuGet | Install-Package
+TODO
 ```
 
 Note that currently, only one configuration server implementation (etcd or Consul) can be added to a single project.
@@ -77,131 +77,52 @@ kumuluzee:
 **Configuring Consul**
 
 By default, KumuluzEE Config Consul automatically connects to the local agent at http://localhost:8500. This behaviour 
-can be overridden by specifying agent URL with configuration key `kumuluzee.config.consul.agent`.
+can be overridden by specifying agent URL with configuration key `kumuluzee.config.consul.hosts`.
 
 **Configuration source priorities**
 
 Included source acts as any other configuration source. It has the third highest priority, which means that properties 
-from etcd override properties from configuration files and can be overwritten with properties from environmental 
-variables and system properties.
+from etcd override properties from configuration files and can be overwritten with properties system properties.
 
-**Configuration properties inside etcd**
+**Using configuration in service
 
-Configuration properties are stored in etcd key/value store. 
+In Startup class following code should be added inside ConfigureServices method.
 
-Key names are automatically parsed from KumuluzEE to etcd format (e.g. `environments.dev.name` -> 
-`environments/dev/name`).
-
-Configuration properties are in etcd stored in a dedicated namespace, which is automatically generated from 
-configuration keys `kumuluzee.env.name`, `kumuluzee.name` and `kumuluzee.version`. Example: `kumuluzee.env.name: dev`,
-`kumuluzee.name: customer-service`, `kumuluzee.version: 1.2.3` is
-mapped to namespace `environments/dev/services/customer-service/1.2.3/config`. If `kumuluzee.env.name` or
-`kumuluzee.version` keys are not specified, defaults are used (`dev` and `1.0.0`). If `kumuluzee.name` is not
-specified, namespace `environments/<environment>/services/config` is used. Automatic namespace generation can be
-overwritten with key `kumuluzee.config.namespace`. Example:
-`kumuluzee.config.namespace: environments/dev/services/config`.
-
-Namespace is used as a first part of the key used for etcd key/value store. Example: with set `kumuluzee.env.name: dev`, 
-field `port` from example bellow is in etcd stored in key `/environments/dev/services/test-service/config/port`.
-
-Lists can be stored in etcd in dedicated directories with key names as indexes [0], [1], [2], ...
-
-The following list in yaml
-
-```yml
-sample-list:
-   - first
-   - second
-   - third 
+```csharp
+services.AddKumuluzConfig(options =>
+{
+    options.SetConfigFilePath(Path.GetFullPath("config.yaml"));
+    options.SetExtensions(Extension.Consul, Extension.Etcd);
+});
 ```
 
-can be stored with the following etcd keys:
-
-```
-environments/dev/services/customer-service/1.2.3/config/sample-list/[0]=first
-environments/dev/services/customer-service/1.2.3/config/sample-list/[1]=second
-environments/dev/services/customer-service/1.2.3/config/sample-list/[2]=third
-```
-
-**Configuration properties inside Consul**
-
-Configuration properties in Consul are stored in a similar way as in etcd.
-
-Since Consul uses the same format as etcd, key names are parsed in similar fashion.
-
-KumuluzEE Config Consul also stores keys in automatically generated dedicated namespaces.
-
-For more details, see section above.
+It is also possible to set logger for this configuration
 
 **Retrieving configuration properties**
 
-Configuration can be retrieved the same way as in basic configuration framework. 
+Configuration properties can be retrieved with dependency injection or via ConfigProvider. Example:
 
-Configuration properties can be accessed with `ConfigurationUtil` class. Example:
-
-```java
-String keyValue = ConfigurationUtil.getInstance().get("key-name");
-```
-
-Configuration properties can be injected into a CDI bean with annotations `@ConfigBundle` and `@ConfigValue`. Example:
-
-```java
-@ApplicationScoped
-@ConfigBundle("test-service.config")
-public class ConfigPropertiesExample {
-    
-    @ConfigValue("port")
-    private Boolean servicePort;
-    
-    // getter and setter methods
+```csharp
+public MyClass(IConfig config)
+{
+  var testValue = config.Get<int>("test.value");
 }
+```
+or
+```csharp
+var testValue = ConfigProvider.GetConfig().Get<int>("test.value");
 ```
 
 **Watches**
 
 Since configuration properties in etcd and Consul can be updated during microservice runtime, they have to be
-dynamically updated inside the running microservices. This behaviour can be enabled with watches.
+dynamically updated inside the running microservices. This behaviour can be enabled by subscribing key.
 
-Watches can be enabled with annotation parameter `@ConfigValue(watch = true)` or by subscribing to key changes.
-
-If watch is enabled on a field, its value will be dynamically updated on any change in configuration source, as long 
-as new value is of a proper type. For example, if value in configuration store, linked to an integer field, is changed 
-to a non-integer value, field value will not be updated. Example of enabling watch with annotation:
-
-```java
-@ApplicationScoped
-@ConfigBundle("test-service.config")
-public class ConfigPropertiesExample {
-    
-    @ConfigValue(watch = true)
-    private Boolean servicePort;
-    
-    // getter and setter methods
+```csharp
+int testValue;
+ConfigProvider.GetConfig().Subscribe<int>("test.value", (val) => testValue = val);
 }
 ```
-
-Subscribing to key changes is done with an instance of `ConfigurationUtil` class. Example:
-
-```java
-String watchedKey = "maintenance";
-
-ConfigurationUtil.getInstance().subscribe(watchedKey, (String key, String value) -> {
-
-    if (watchedKey.equals(key)) {
-
-        if ("true".equals(value.toLowerCase())) {
-            log.info("Maintenence mode enabled.");
-        } else {
-            log.info("Maintenence mode disabled.");
-        }
-
-    }
-
-});
-```
-
-If the key is not present in configuration server, a value from other configuration sources is returned. Similarly, if
-the key is deleted from configuration server, a value from other configuration sources is returned.
 
 **Retry delays**
 
@@ -212,41 +133,6 @@ delay, two parameters need to be specified:
 - `kumuluzee.config.max-retry-delay-ms`, which sets the maximum delay duration in ms on consecutive errors -
 default: 900000 (15 min)
 
-
-**Build the microservice**
-
-Ensure you have JDK 8 (or newer), Maven 3.2.1 (or newer) and Git installed.
-    
-Build the config library with command:
-
-```bash
-    mvn install
-```
-    
-Build archives are located in the modules respected folder `target` and local repository `.m2`.
-
-**Run the microservice**
-
-Use the following command to run the sample from Windows CMD:
-```
-java -cp target/classes;target/dependency/* com.kumuluz.ee.EeApplication 
-```
-
-## Changelog
-
-Recent changes can be viewed on Github on the [Releases Page](https://github.com/kumuluz/kumuluzee-config/releases)
-
-## Contribute
-
-See the [contributing docs](https://github.com/kumuluz/kumuluzee-config/blob/master/CONTRIBUTING.md)
-
-When submitting an issue, please follow the 
-[guidelines](https://github.com/kumuluz/kumuluzee-config/blob/master/CONTRIBUTING.md#bugs).
-
-When submitting a bugfix, write a test that exposes the bug and fails before applying your fix. Submit the test 
-alongside the fix.
-
-When submitting a new feature, add tests that cover the feature.
 
 ## License
 
