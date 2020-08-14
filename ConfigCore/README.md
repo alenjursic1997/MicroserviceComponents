@@ -113,7 +113,7 @@ or
 var testValue = ConfigProvider.GetConfig().Get<int>("test.value");
 ```
 
-**Watches**
+**Subscription**
 
 Since configuration properties in etcd and Consul can be updated during microservice runtime, they have to be
 dynamically updated inside the running microservices. This behaviour can be enabled by subscribing key.
@@ -121,7 +121,6 @@ dynamically updated inside the running microservices. This behaviour can be enab
 ```csharp
 int testValue;
 ConfigProvider.GetConfig().Subscribe<int>("test.value", (val) => testValue = val);
-}
 ```
 
 **Retry delays**
