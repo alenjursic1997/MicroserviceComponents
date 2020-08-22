@@ -66,7 +66,7 @@ Additional built-in health check will be provided soon.
 ## Implementing custom health checks
 
 To implement your custom health check you must create a new class that derives from `HealthCheck` abstract class.
-It includes method `CheckResponse()` which returns object of type `HealthCheckReponse`. On which health check implementation we can also use `Liveness` or `Readiness`.
+It includes method `CheckResponse()` which returns object of type `HealthCheckReponse`. On every health check implementation we can also use `Liveness` or `Readiness` attributes.
 
 `HealthCheckResponse` contains the following properties:
 - **Status** enumeration whith values "DOWN" or "UP", which can be set by calling methods `Up()` and `Down()` on HealthCheckReponse type object.
