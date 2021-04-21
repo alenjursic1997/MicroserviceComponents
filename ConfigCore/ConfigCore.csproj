@@ -28,7 +28,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="System.Text.Encodings.Web" Version="4.6.0" />
+		<PackageReference Include="System.Text.Encodings.Web" Version="4.7.2" />
 		<PackageReference Include="YamlDotNet" Version="7.0.0" />
 	</ItemGroup>
 
